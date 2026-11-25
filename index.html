@@ -12,7 +12,7 @@
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
   <!-- Marked.js for Markdown Rendering & Highlight.js for Syntax Highlighting -->
   <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" />
+  <link id="hljsThemeLink" rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" />
   <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
 
   <script>
@@ -26,28 +26,28 @@
           },
           colors: {
             console: {
-              bg: '#0d0e11',
-              surface: '#14151a',
-              elevated: '#1b1d24',
-              border: '#262830',
-              borderHover: '#383b47',
+              bg: 'var(--bg-primary)',
+              surface: 'var(--bg-surface)',
+              elevated: 'var(--bg-elevated)',
+              border: 'var(--border-color)',
+              borderHover: 'var(--border-hover)',
               accent: '#f55036',
               accentHover: '#e0432a',
-              text: '#f3f4f6',
-              muted: '#9ca3af',
-              dim: '#6b7280',
+              text: 'var(--text-primary)',
+              muted: 'var(--text-muted)',
+              dim: 'var(--text-dim)',
             },
             groq: {
-              bg: '#0d0e11',
-              surface: '#14151a',
-              elevated: '#1b1d24',
-              border: '#262830',
-              borderHover: '#383b47',
+              bg: 'var(--bg-primary)',
+              surface: 'var(--bg-surface)',
+              elevated: 'var(--bg-elevated)',
+              border: 'var(--border-color)',
+              borderHover: 'var(--border-hover)',
               orange: '#f55036',
               orangeHover: '#e0432a',
-              text: '#f3f4f6',
-              muted: '#9ca3af',
-              dim: '#6b7280',
+              text: 'var(--text-primary)',
+              muted: 'var(--text-muted)',
+              dim: 'var(--text-dim)',
             }
           }
         }
@@ -56,20 +56,43 @@
   </script>
 
   <style>
+    /* Theme Color Tokens (Light & Dark Mode) */
+    :root {
+      --bg-primary: #f8fafc;
+      --bg-surface: #ffffff;
+      --bg-elevated: #f1f5f9;
+      --border-color: #e2e8f0;
+      --border-hover: #cbd5e1;
+      --text-primary: #0f172a;
+      --text-muted: #475569;
+      --text-dim: #64748b;
+    }
+
+    html.dark {
+      --bg-primary: #0d0e11;
+      --bg-surface: #14151a;
+      --bg-elevated: #1b1d24;
+      --border-color: #262830;
+      --border-hover: #383b47;
+      --text-primary: #f3f4f6;
+      --text-muted: #9ca3af;
+      --text-dim: #6b7280;
+    }
+
     /* Custom Scrollbar for Console Aesthetic */
     ::-webkit-scrollbar {
       width: 6px;
       height: 6px;
     }
     ::-webkit-scrollbar-track {
-      background: #0d0e11;
+      background: var(--bg-primary);
     }
     ::-webkit-scrollbar-thumb {
-      background: #262830;
+      background: var(--border-color);
       border-radius: 3px;
     }
     ::-webkit-scrollbar-thumb:hover {
-      background: #383b47;
+      background: var(--border-hover);
     }
 
     /* Range Slider Styling */
@@ -81,7 +104,7 @@
     }
     input[type="range"]::-webkit-slider-runnable-track {
       height: 5px;
-      background: #262830;
+      background: var(--border-color);
       border-radius: 999px;
     }
     input[type="range"]::-webkit-slider-thumb {
@@ -92,7 +115,7 @@
       border-radius: 50%;
       background: #f55036;
       margin-top: -5px;
-      box-shadow: 0 0 0 2px #14151a;
+      box-shadow: 0 0 0 2px var(--bg-surface);
       transition: transform 0.12s ease;
     }
     input[type="range"]::-webkit-slider-thumb:hover {
@@ -103,7 +126,7 @@
     .markdown-body {
       line-height: 1.65;
       font-size: 0.9375rem;
-      color: #e5e7eb;
+      color: var(--text-primary);
       word-break: break-word;
     }
     .markdown-body p {
@@ -126,7 +149,7 @@
       margin-bottom: 0.25rem;
     }
     .markdown-body strong {
-      color: #ffffff;
+      color: var(--text-primary);
       font-weight: 600;
     }
     .markdown-body a {
@@ -136,19 +159,25 @@
     .markdown-body code:not(pre code) {
       font-family: 'JetBrains Mono', monospace;
       font-size: 0.825rem;
-      background-color: #1f222b;
-      color: #f87171;
+      background-color: var(--bg-elevated);
+      color: #dc2626;
       padding: 0.15rem 0.35rem;
       border-radius: 0.25rem;
-      border: 1px solid #2d303d;
+      border: 1px solid var(--border-color);
+    }
+    html.dark .markdown-body code:not(pre code) {
+      color: #f87171;
     }
     .markdown-body pre {
       position: relative;
-      background-color: #0b0c0f !important;
-      border: 1px solid #262830;
+      background-color: #f8fafc !important;
+      border: 1px solid var(--border-color);
       border-radius: 0.5rem;
       margin: 0.75rem 0;
       overflow: hidden;
+    }
+    html.dark .markdown-body pre {
+      background-color: #0b0c0f !important;
     }
     .markdown-body pre code {
       display: block;
@@ -162,7 +191,7 @@
     .markdown-body blockquote {
       border-left: 3px solid #f55036;
       padding-left: 0.875rem;
-      color: #9ca3af;
+      color: var(--text-muted);
       margin: 0.75rem 0;
     }
     .markdown-body table {
@@ -172,13 +201,13 @@
       font-size: 0.85rem;
     }
     .markdown-body th, .markdown-body td {
-      border: 1px solid #262830;
+      border: 1px solid var(--border-color);
       padding: 0.5rem 0.75rem;
       text-align: left;
     }
     .markdown-body th {
-      background-color: #1b1d24;
-      color: #fff;
+      background-color: var(--bg-elevated);
+      color: var(--text-primary);
     }
 
     /* Blinking cursor during streaming */
@@ -196,11 +225,14 @@
 
     /* Homepage Subtle Radial Glow */
     .hero-glow {
+      background: radial-gradient(circle at 50% 0%, rgba(245, 80, 54, 0.12) 0%, rgba(248, 250, 252, 0) 68%);
+    }
+    html.dark .hero-glow {
       background: radial-gradient(circle at 50% 0%, rgba(245, 80, 54, 0.16) 0%, rgba(13, 14, 17, 0) 68%);
     }
   </style>
 </head>
-<body class="bg-console-bg text-console-text font-sans antialiased min-h-screen flex flex-col selection:bg-console-accent selection:text-white">
+<body class="bg-console-bg text-console-text font-sans antialiased min-h-screen flex flex-col selection:bg-console-accent selection:text-white transition-colors duration-200">
 
   <!-- ==================== 1. HOMEPAGE / LANDING VIEW ==================== -->
   <div id="homepageView" class="flex-1 flex flex-col bg-console-bg hero-glow overflow-y-auto">
@@ -213,26 +245,45 @@
           <div class="w-8 h-8 rounded-lg bg-groq-orange flex items-center justify-center text-white font-bold text-base shadow-md shadow-groq-orange/25 group-hover:scale-105 transition">
             G
           </div>
-          <span class="font-semibold text-base tracking-tight text-white">Groq<span class="text-groq-muted font-normal">Playground</span></span>
+          <span class="font-semibold text-base tracking-tight text-slate-900 dark:text-white">Groq<span class="text-groq-muted font-normal">Playground</span></span>
         </a>
 
         <!-- Center Anchor Links -->
         <div class="hidden md:flex items-center gap-7 text-xs font-medium text-console-muted">
-          <a href="#api-setup" class="hover:text-white transition">API Setup</a>
-          <a href="#features" class="hover:text-white transition">Capabilities</a>
-          <a href="#models" class="hover:text-white transition">Supported Models</a>
+          <a href="#api-setup" class="hover:text-slate-900 dark:hover:text-white transition">API Setup</a>
+          <a href="#features" class="hover:text-slate-900 dark:hover:text-white transition">Capabilities</a>
+          <a href="#models" class="hover:text-slate-900 dark:hover:text-white transition">Supported Models</a>
         </div>
 
-        <!-- Right Quick Action -->
-        <div class="flex items-center gap-3">
-          <span id="homeKeyBadge" class="hidden items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-mono bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
-            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+        <!-- Right Quick Action & Theme Toggle -->
+        <div class="flex items-center gap-2.5 sm:gap-3">
+          <!-- Light / Dark Theme Toggle Button (Homepage) -->
+          <button
+            type="button"
+            data-theme-toggle
+            title="Switch between Light and Dark mode"
+            aria-label="Toggle Light and Dark Mode"
+            class="p-2 rounded-lg bg-console-elevated hover:bg-console-border border border-console-border text-slate-700 dark:text-gray-200 transition flex items-center gap-1.5 text-xs font-medium"
+          >
+            <!-- Sun Icon (shown in Dark Mode) -->
+            <svg class="theme-icon-sun w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+            </svg>
+            <!-- Moon Icon (shown in Light Mode) -->
+            <svg class="theme-icon-moon hidden w-4 h-4 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+            </svg>
+            <span class="theme-label hidden sm:inline">Light</span>
+          </button>
+
+          <span id="homeKeyBadge" class="hidden items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-mono bg-emerald-500/10 text-emerald-600 dark:text-emerald-400 border border-emerald-500/30">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400"></span>
             Key Connected
           </span>
           <button
             id="launchPlaygroundNavBtn"
             type="button"
-            class="px-3.5 py-2 rounded-lg bg-console-elevated hover:bg-console-border border border-console-border text-xs font-medium text-white transition flex items-center gap-1.5"
+            class="px-3.5 py-2 rounded-lg bg-console-elevated hover:bg-console-border border border-console-border text-xs font-medium text-slate-900 dark:text-white transition flex items-center gap-1.5"
           >
             <span>Launch Playground</span>
             <svg class="w-3.5 h-3.5 text-console-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -246,12 +297,12 @@
     <!-- Hero Banner Section -->
     <section id="top" class="max-w-6xl mx-auto px-4 sm:px-6 pt-14 pb-10 text-center">
       <!-- Live Telemetry Pill -->
-      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-console-surface border border-console-border text-xs font-mono text-gray-300 mb-6 shadow-sm">
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-console-surface border border-console-border text-xs font-mono text-slate-700 dark:text-gray-300 mb-6 shadow-sm">
         <span class="w-2 h-2 rounded-full bg-console-accent animate-pulse"></span>
-        <span>LPU™ Inference Engine · <strong class="text-white">~850 tok/s</strong> real-time streaming</span>
+        <span>LPU™ Inference Engine · <strong class="text-slate-900 dark:text-white">~850 tok/s</strong> real-time streaming</span>
       </div>
 
-      <h1 class="text-3xl sm:text-5xl font-bold tracking-tight text-white max-w-3xl mx-auto leading-[1.15] mb-4">
+      <h1 class="text-3xl sm:text-5xl font-bold tracking-tight text-slate-900 dark:text-white max-w-3xl mx-auto leading-[1.15] mb-4">
         Ultra-Low Latency Groq AI Chat &amp; <span class="text-groq-orange">Compound Web Search</span>
       </h1>
       <p class="text-sm sm:text-base text-groq-muted max-w-2xl mx-auto leading-relaxed mb-8">
@@ -272,7 +323,7 @@
           href="https://console.groq.com/keys"
           target="_blank"
           rel="noopener noreferrer"
-          class="px-5 py-2.5 rounded-xl bg-groq-surface hover:bg-groq-elevated border border-groq-border text-gray-200 text-xs sm:text-sm font-medium transition flex items-center gap-2"
+          class="px-5 py-2.5 rounded-xl bg-groq-surface hover:bg-groq-elevated border border-groq-border text-slate-800 dark:text-gray-200 text-xs sm:text-sm font-medium transition flex items-center gap-2"
         >
           <span>Get Free Groq API Key</span>
           <svg class="w-3.5 h-3.5 text-groq-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
@@ -284,7 +335,7 @@
 
     <!-- DEDICATED API KEY SETUP SECTION INSIDE HOMEPAGE -->
     <section id="api-setup" class="max-w-2xl w-full mx-auto px-4 sm:px-6 py-6">
-      <div class="bg-groq-surface border border-groq-border rounded-2xl p-6 sm:p-8 shadow-2xl relative overflow-hidden">
+      <div class="bg-groq-surface border border-groq-border rounded-2xl p-6 sm:p-8 shadow-xl dark:shadow-2xl relative overflow-hidden">
         <!-- Subtle top accent bar -->
         <div class="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-groq-orange via-amber-500 to-groq-orange"></div>
 
@@ -296,7 +347,7 @@
               </svg>
             </div>
             <div>
-              <h2 class="text-base sm:text-lg font-semibold text-white">Step 1: Enter Your Groq API Key</h2>
+              <h2 class="text-base sm:text-lg font-semibold text-slate-900 dark:text-white">Step 1: Enter Your Groq API Key</h2>
               <p class="text-xs text-groq-muted">Required to authenticate live Groq inference &amp; compound web search</p>
             </div>
           </div>
@@ -308,7 +359,7 @@
         <form id="apiKeyForm" class="space-y-4">
           <div>
             <div class="flex items-center justify-between mb-1.5">
-              <label for="apiKeyInput" class="text-xs font-medium text-gray-300">GroqCloud Secret Key</label>
+              <label for="apiKeyInput" class="text-xs font-medium text-slate-700 dark:text-gray-300">GroqCloud Secret Key</label>
               <a href="https://console.groq.com/keys" target="_blank" rel="noopener noreferrer" class="text-xs text-groq-orange hover:underline font-medium">
                 Create key at console.groq.com →
               </a>
@@ -321,13 +372,13 @@
                 autocomplete="off"
                 spellcheck="false"
                 required
-                class="w-full bg-console-bg border border-console-border focus:border-console-accent rounded-xl px-4 py-3 pr-11 text-sm font-mono text-white placeholder-console-dim focus:outline-none transition"
+                class="w-full bg-console-bg border border-console-border focus:border-console-accent rounded-xl px-4 py-3 pr-11 text-sm font-mono text-slate-900 dark:text-white placeholder-console-dim focus:outline-none transition"
               />
               <button
                 type="button"
                 id="toggleKeyVisibility"
                 title="Show or hide API key"
-                class="absolute right-3 top-1/2 -translate-y-1/2 text-console-dim hover:text-gray-200 p-1.5 rounded-lg transition"
+                class="absolute right-3 top-1/2 -translate-y-1/2 text-console-dim hover:text-slate-800 dark:hover:text-gray-200 p-1.5 rounded-lg transition"
               >
                 <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                   <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
@@ -335,12 +386,12 @@
                 </svg>
               </button>
             </div>
-            <p id="apiKeyError" class="text-xs text-red-400 mt-2 hidden"></p>
+            <p id="apiKeyError" class="text-xs text-red-500 dark:text-red-400 mt-2 hidden"></p>
           </div>
 
           <!-- Storage Option & Submit -->
           <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
-            <label class="inline-flex items-center gap-2 cursor-pointer select-none text-xs text-console-muted hover:text-gray-300">
+            <label class="inline-flex items-center gap-2 cursor-pointer select-none text-xs text-console-muted hover:text-slate-900 dark:hover:text-gray-300">
               <input
                 id="rememberKeyCheckbox"
                 type="checkbox"
@@ -366,7 +417,7 @@
         <!-- Security Note -->
         <div class="mt-5 pt-4 border-t border-groq-border flex items-center justify-between text-[11px] text-groq-dim">
           <span>🔒 Direct browser-to-Groq HTTPS requests (<code>api.groq.com</code>). No intermediary server.</span>
-          <button id="clearSavedKeyHomeBtn" type="button" class="hidden text-red-400 hover:underline font-medium shrink-0 ml-2">
+          <button id="clearSavedKeyHomeBtn" type="button" class="hidden text-red-500 dark:text-red-400 hover:underline font-medium shrink-0 ml-2">
             Forget Saved Key
           </button>
         </div>
@@ -377,34 +428,34 @@
     <section id="features" class="max-w-6xl mx-auto px-4 sm:px-6 py-12">
       <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
         <!-- Card 1: Switchable Models -->
-        <div id="models" class="bg-console-surface border border-console-border rounded-2xl p-6 hover:border-console-borderHover transition">
+        <div id="models" class="bg-console-surface border border-console-border rounded-2xl p-6 hover:border-console-borderHover transition shadow-xs">
           <div class="w-9 h-9 rounded-lg bg-console-accent/15 border border-console-accent/30 flex items-center justify-center text-console-accent mb-4">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
             </svg>
           </div>
-          <h3 class="text-sm font-semibold text-white mb-1.5">Switchable Foundation Models</h3>
+          <h3 class="text-sm font-semibold text-slate-900 dark:text-white mb-1.5">Switchable Foundation Models</h3>
           <p class="text-xs text-console-muted leading-relaxed mb-4">
             Hot-swap between flagship open models and custom model IDs mid-conversation without losing context.
           </p>
           <div class="flex flex-wrap gap-1.5 font-mono text-[10px]">
-            <span class="px-2 py-0.5 rounded bg-console-bg border border-console-border text-gray-300">llama-3.3-70b</span>
-            <span class="px-2 py-0.5 rounded bg-console-bg border border-console-border text-gray-300">llama-3.1-8b</span>
-            <span class="px-2 py-0.5 rounded bg-console-bg border border-console-border text-gray-300">gpt-oss-120b</span>
-            <span class="px-2 py-0.5 rounded bg-console-bg border border-console-border text-gray-300">qwen3-32b</span>
+            <span class="px-2 py-0.5 rounded bg-console-bg border border-console-border text-slate-700 dark:text-gray-300">llama-3.3-70b</span>
+            <span class="px-2 py-0.5 rounded bg-console-bg border border-console-border text-slate-700 dark:text-gray-300">llama-3.1-8b</span>
+            <span class="px-2 py-0.5 rounded bg-console-bg border border-console-border text-slate-700 dark:text-gray-300">gpt-oss-120b</span>
+            <span class="px-2 py-0.5 rounded bg-console-bg border border-console-border text-slate-700 dark:text-gray-300">qwen3-32b</span>
           </div>
         </div>
 
         <!-- Card 2: Precision Sampling Controls -->
-        <div class="bg-console-surface border border-console-border rounded-2xl p-6 hover:border-console-borderHover transition">
-          <div class="w-9 h-9 rounded-lg bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400 mb-4">
+        <div class="bg-console-surface border border-console-border rounded-2xl p-6 hover:border-console-borderHover transition shadow-xs">
+          <div class="w-9 h-9 rounded-lg bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-500 dark:text-amber-400 mb-4">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
             </svg>
           </div>
-          <h3 class="text-sm font-semibold text-white mb-1.5">Precision Temperature &amp; System Control</h3>
+          <h3 class="text-sm font-semibold text-slate-900 dark:text-white mb-1.5">Precision Temperature &amp; System Control</h3>
           <p class="text-xs text-console-muted leading-relaxed mb-4">
-            Fine-tune sampling temperature from <code class="text-gray-300 font-mono">0.0</code> deterministic code output up to <code class="text-gray-300 font-mono">2.0</code> creative ideation, paired with custom system instructions.
+            Fine-tune sampling temperature from <code class="text-slate-800 dark:text-gray-300 font-mono">0.0</code> deterministic code output up to <code class="text-slate-800 dark:text-gray-300 font-mono">2.0</code> creative ideation, paired with custom system instructions.
           </p>
           <div class="text-[11px] font-mono text-console-dim bg-console-bg border border-console-border rounded-lg px-3 py-2">
             temperature: <span class="text-console-accent">0.0</span> ───●─── <span class="text-console-accent">2.0</span>
@@ -412,18 +463,18 @@
         </div>
 
         <!-- Card 3: Browser Search Toggle -->
-        <div class="bg-console-surface border border-console-border rounded-2xl p-6 hover:border-console-borderHover transition">
-          <div class="w-9 h-9 rounded-lg bg-sky-500/15 border border-sky-500/30 flex items-center justify-center text-sky-400 mb-4">
+        <div class="bg-console-surface border border-console-border rounded-2xl p-6 hover:border-console-borderHover transition shadow-xs">
+          <div class="w-9 h-9 rounded-lg bg-sky-500/15 border border-sky-500/30 flex items-center justify-center text-sky-500 dark:text-sky-400 mb-4">
             <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
             </svg>
           </div>
-          <h3 class="text-sm font-semibold text-white mb-1.5">Browser Search (On / Off)</h3>
+          <h3 class="text-sm font-semibold text-slate-900 dark:text-white mb-1.5">Browser Search (On / Off)</h3>
           <p class="text-xs text-console-muted leading-relaxed mb-4">
             Toggle real-time web grounding on demand. Automatically routes queries through compound search models for up-to-date answers and sources.
           </p>
-          <div class="inline-flex items-center gap-2 text-[11px] font-mono text-sky-400 bg-sky-500/10 border border-sky-500/30 rounded-lg px-2.5 py-1">
-            <span class="w-1.5 h-1.5 rounded-full bg-sky-400"></span>
+          <div class="inline-flex items-center gap-2 text-[11px] font-mono text-sky-600 dark:text-sky-400 bg-sky-500/10 border border-sky-500/30 rounded-lg px-2.5 py-1">
+            <span class="w-1.5 h-1.5 rounded-full bg-sky-500 dark:bg-sky-400"></span>
             <span>compound search ready</span>
           </div>
         </div>
@@ -452,35 +503,54 @@
           <div class="w-7 h-7 rounded-md bg-groq-orange flex items-center justify-center text-white font-bold text-sm shadow-sm group-hover:scale-105 transition">
             G
           </div>
-          <span class="font-semibold text-sm tracking-tight text-white">Groq<span class="text-groq-muted font-normal">Console</span></span>
+          <span class="font-semibold text-sm tracking-tight text-slate-900 dark:text-white">Groq<span class="text-groq-muted font-normal">Console</span></span>
         </button>
         <span class="text-groq-border hidden sm:inline">/</span>
-        <span class="text-xs font-medium text-gray-300 bg-groq-elevated border border-groq-border px-2.5 py-1 rounded-md hidden sm:inline-flex items-center gap-1.5">
-          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+        <span class="text-xs font-medium text-slate-700 dark:text-gray-300 bg-groq-elevated border border-groq-border px-2.5 py-1 rounded-md hidden sm:inline-flex items-center gap-1.5">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-500 dark:bg-emerald-400"></span>
           Playground
         </span>
       </div>
 
-      <!-- Right: Active Search Pill, Home / Key Status Button, Mobile Sidebar Toggle -->
-      <div class="flex items-center gap-2 sm:gap-3">
+      <!-- Right: Active Search Pill, Theme Toggle, Home / Key Status Button, Mobile Sidebar Toggle -->
+      <div class="flex items-center gap-2 sm:gap-2.5">
         <!-- Active Search Indicator Pill -->
-        <div id="headerSearchBadge" class="hidden items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium bg-sky-500/10 text-sky-400 border border-sky-500/30">
+        <div id="headerSearchBadge" class="hidden items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium bg-sky-500/10 text-sky-600 dark:text-sky-400 border border-sky-500/30">
           <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
           </svg>
           <span>Web Search ON</span>
         </div>
 
+        <!-- Light / Dark Theme Toggle Button (Playground) -->
+        <button
+          type="button"
+          data-theme-toggle
+          title="Switch between Light and Dark mode"
+          aria-label="Toggle Light and Dark Mode"
+          class="p-2 rounded-lg bg-console-bg hover:bg-console-elevated border border-console-border text-slate-700 dark:text-gray-200 transition flex items-center gap-1.5 text-xs font-medium"
+        >
+          <!-- Sun Icon (shown in Dark Mode) -->
+          <svg class="theme-icon-sun w-4 h-4 text-amber-400" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 3v1m0 16v1m9-9h-1M4 12H3m15.364 6.364l-.707-.707M6.343 6.343l-.707-.707m12.728 0l-.707.707M6.343 17.657l-.707.707M16 12a4 4 0 11-8 0 4 4 0 018 0z" />
+          </svg>
+          <!-- Moon Icon (shown in Light Mode) -->
+          <svg class="theme-icon-moon hidden w-4 h-4 text-slate-700" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M20.354 15.354A9 9 0 018.646 3.646 9.003 9.003 0 0012 21a9.003 9.003 0 008.354-5.646z" />
+          </svg>
+          <span class="theme-label hidden md:inline text-[11px]">Light</span>
+        </button>
+
         <!-- Home / API Key Button -->
         <button
           id="manageKeyBtn"
           type="button"
           title="Return to Homepage or Change API Key"
-          class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-console-bg hover:bg-console-elevated border border-console-border text-xs text-gray-300 transition"
+          class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-console-bg hover:bg-console-elevated border border-console-border text-xs text-slate-700 dark:text-gray-300 transition"
         >
-          <span id="keyStatusDot" class="w-2 h-2 rounded-full bg-emerald-400"></span>
+          <span id="keyStatusDot" class="w-2 h-2 rounded-full bg-emerald-500 dark:bg-emerald-400"></span>
           <span id="keyMaskedText" class="font-mono text-[11px] text-console-muted hidden sm:inline">gsk_••••</span>
-          <span class="text-[11px] font-medium text-gray-300">Home / Key</span>
+          <span class="text-[11px] font-medium text-slate-800 dark:text-gray-300">Home / Key</span>
         </button>
 
         <!-- Mobile Config Toggle Button -->
@@ -488,7 +558,7 @@
           id="toggleSidebarBtn"
           type="button"
           title="Toggle Parameters"
-          class="lg:hidden p-2 rounded-lg bg-console-bg hover:bg-console-elevated border border-console-border text-gray-300 transition"
+          class="lg:hidden p-2 rounded-lg bg-console-bg hover:bg-console-elevated border border-console-border text-slate-700 dark:text-gray-300 transition"
         >
           <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
             <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
@@ -504,24 +574,24 @@
       <main class="flex-1 flex flex-col min-w-0 bg-console-bg">
 
         <!-- Error Banner -->
-        <div id="errorBanner" class="hidden bg-red-950/80 border-b border-red-500/40 px-4 py-2.5 flex items-center justify-between gap-3 text-xs text-red-200">
+        <div id="errorBanner" class="hidden bg-red-50 dark:bg-red-950/80 border-b border-red-300 dark:border-red-500/40 px-4 py-2.5 flex items-center justify-between gap-3 text-xs text-red-700 dark:text-red-200">
           <div class="flex items-center gap-2 min-w-0">
-            <svg class="w-4 h-4 text-red-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <svg class="w-4 h-4 text-red-500 dark:text-red-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
             </svg>
             <span id="errorBannerText" class="truncate">An error occurred.</span>
           </div>
-          <button id="dismissErrorBtn" type="button" class="text-red-300 hover:text-white font-medium shrink-0">Dismiss</button>
+          <button id="dismissErrorBtn" type="button" class="text-red-600 dark:text-red-300 hover:text-red-900 dark:hover:text-white font-medium shrink-0">Dismiss</button>
         </div>
 
         <!-- Scrollable Chat Messages Container -->
         <div id="chatContainer" class="flex-1 overflow-y-auto px-4 sm:px-6 py-6 space-y-6">
           <!-- Empty State / Starter Prompts -->
           <div id="emptyState" class="max-w-2xl mx-auto my-auto pt-8 sm:pt-16 text-center">
-            <div class="w-12 h-12 rounded-2xl bg-groq-surface border border-groq-border flex items-center justify-center mx-auto mb-4 shadow-lg">
+            <div class="w-12 h-12 rounded-2xl bg-groq-surface border border-groq-border flex items-center justify-center mx-auto mb-4 shadow-md dark:shadow-lg">
               <span class="text-groq-orange font-bold text-xl">G</span>
             </div>
-            <h2 class="text-lg font-semibold text-white mb-1">Groq Console Playground</h2>
+            <h2 class="text-lg font-semibold text-slate-900 dark:text-white mb-1">Groq Console Playground</h2>
             <p class="text-xs sm:text-sm text-groq-muted max-w-md mx-auto mb-6">
               Ultra-low latency LPU™ inference. Switch models, adjust temperature, or toggle Browser Search in the right panel.
             </p>
@@ -530,9 +600,9 @@
               <button
                 type="button"
                 data-prompt="Write a clean, well-commented binary search function in Python with time complexity analysis."
-                class="starter-prompt p-3.5 rounded-xl bg-console-surface hover:bg-console-elevated border border-console-border hover:border-console-borderHover transition group"
+                class="starter-prompt p-3.5 rounded-xl bg-console-surface hover:bg-console-elevated border border-console-border hover:border-console-borderHover transition group shadow-2xs"
               >
-                <div class="text-xs font-semibold text-white group-hover:text-console-accent transition mb-1">Code Generation</div>
+                <div class="text-xs font-semibold text-slate-900 dark:text-white group-hover:text-console-accent transition mb-1">Code Generation</div>
                 <div class="text-[11px] text-console-muted line-clamp-2">Write a binary search function in Python with complexity analysis.</div>
               </button>
 
@@ -540,11 +610,11 @@
                 type="button"
                 data-prompt="What are the most notable breakthroughs in open-weights AI models this week? Cite sources."
                 data-enable-search="true"
-                class="starter-prompt p-3.5 rounded-xl bg-console-surface hover:bg-console-elevated border border-console-border hover:border-console-borderHover transition group"
+                class="starter-prompt p-3.5 rounded-xl bg-console-surface hover:bg-console-elevated border border-console-border hover:border-console-borderHover transition group shadow-2xs"
               >
                 <div class="flex items-center justify-between mb-1">
-                  <span class="text-xs font-semibold text-white group-hover:text-sky-400 transition">Live Web Research</span>
-                  <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-sky-500/10 text-sky-400 border border-sky-500/30">Search ON</span>
+                  <span class="text-xs font-semibold text-slate-900 dark:text-white group-hover:text-sky-500 dark:group-hover:text-sky-400 transition">Live Web Research</span>
+                  <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-sky-500/10 text-sky-600 dark:text-sky-400 border border-sky-500/30">Search ON</span>
                 </div>
                 <div class="text-[11px] text-console-muted line-clamp-2">Search recent breakthroughs in open-weights AI models with citations.</div>
               </button>
@@ -552,18 +622,18 @@
               <button
                 type="button"
                 data-prompt="Explain how speculative decoding accelerates LLM token generation in 4 concise bullet points."
-                class="starter-prompt p-3.5 rounded-xl bg-console-surface hover:bg-console-elevated border border-console-border hover:border-console-borderHover transition group"
+                class="starter-prompt p-3.5 rounded-xl bg-console-surface hover:bg-console-elevated border border-console-border hover:border-console-borderHover transition group shadow-2xs"
               >
-                <div class="text-xs font-semibold text-white group-hover:text-console-accent transition mb-1">Technical Concept</div>
+                <div class="text-xs font-semibold text-slate-900 dark:text-white group-hover:text-console-accent transition mb-1">Technical Concept</div>
                 <div class="text-[11px] text-console-muted line-clamp-2">Explain how speculative decoding accelerates token generation.</div>
               </button>
 
               <button
                 type="button"
                 data-prompt="Brainstorm 5 creative SaaS micro-product ideas for solo developers."
-                class="starter-prompt p-3.5 rounded-xl bg-console-surface hover:bg-console-elevated border border-console-border hover:border-console-borderHover transition group"
+                class="starter-prompt p-3.5 rounded-xl bg-console-surface hover:bg-console-elevated border border-console-border hover:border-console-borderHover transition group shadow-2xs"
               >
-                <div class="text-xs font-semibold text-white group-hover:text-console-accent transition mb-1">Creative Ideation</div>
+                <div class="text-xs font-semibold text-slate-900 dark:text-white group-hover:text-console-accent transition mb-1">Creative Ideation</div>
                 <div class="text-[11px] text-console-muted line-clamp-2">Brainstorm 5 creative SaaS micro-product ideas for solo developers.</div>
               </button>
             </div>
@@ -578,7 +648,7 @@
                 id="promptInput"
                 rows="1"
                 placeholder="Enter a prompt... (Shift + Enter for new line)"
-                class="flex-1 bg-transparent text-sm text-white placeholder-console-dim px-2.5 py-2 resize-none max-h-48 focus:outline-none leading-relaxed"
+                class="flex-1 bg-transparent text-sm text-slate-900 dark:text-white placeholder-console-dim px-2.5 py-2 resize-none max-h-48 focus:outline-none leading-relaxed"
               ></textarea>
 
               <div class="flex items-center gap-1.5 shrink-0 pb-0.5">
@@ -586,9 +656,9 @@
                   id="stopBtn"
                   type="button"
                   title="Stop generation"
-                  class="hidden items-center gap-1.5 px-3 py-2 rounded-xl bg-red-500/15 hover:bg-red-500/25 border border-red-500/40 text-red-400 text-xs font-medium transition"
+                  class="hidden items-center gap-1.5 px-3 py-2 rounded-xl bg-red-500/15 hover:bg-red-500/25 border border-red-500/40 text-red-600 dark:text-red-400 text-xs font-medium transition"
                 >
-                  <span class="w-2 h-2 rounded-xs bg-red-400"></span>
+                  <span class="w-2 h-2 rounded-xs bg-red-500 dark:bg-red-400"></span>
                   <span>Stop</span>
                 </button>
 
@@ -609,10 +679,10 @@
             <!-- Active Parameter Telemetry Strip -->
             <div class="flex flex-wrap items-center justify-between gap-2 mt-2 px-1 text-[11px] font-mono text-console-dim">
               <div class="flex items-center gap-3">
-                <span>Model: <strong id="activeModelFooter" class="text-gray-300 font-medium">llama-3.3-70b-versatile</strong></span>
-                <span>Temp: <strong id="activeTempFooter" class="text-gray-300 font-medium">0.7</strong></span>
+                <span>Model: <strong id="activeModelFooter" class="text-slate-800 dark:text-gray-300 font-medium">llama-3.3-70b-versatile</strong></span>
+                <span>Temp: <strong id="activeTempFooter" class="text-slate-800 dark:text-gray-300 font-medium">0.7</strong></span>
               </div>
-              <span id="lastMetricsSummary" class="text-emerald-400"></span>
+              <span id="lastMetricsSummary" class="text-emerald-600 dark:text-emerald-400"></span>
             </div>
           </div>
         </div>
@@ -628,8 +698,8 @@
       >
         <!-- Sidebar Header -->
         <div class="h-13 min-h-[52px] px-4 border-b border-console-border flex items-center justify-between shrink-0">
-          <span class="text-xs font-semibold uppercase tracking-wider text-gray-300">Parameters</span>
-          <button id="closeSidebarBtn" type="button" class="lg:hidden p-1.5 rounded-lg text-console-muted hover:text-white hover:bg-console-elevated transition">
+          <span class="text-xs font-semibold uppercase tracking-wider text-slate-700 dark:text-gray-300">Parameters</span>
+          <button id="closeSidebarBtn" type="button" class="lg:hidden p-1.5 rounded-lg text-console-muted hover:text-slate-900 dark:hover:text-white hover:bg-console-elevated transition">
             <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -642,14 +712,14 @@
           <!-- 1. MODEL SELECTOR -->
           <div>
             <div class="flex items-center justify-between mb-1.5">
-              <label for="modelSelect" class="text-xs font-medium text-gray-300">Model</label>
+              <label for="modelSelect" class="text-xs font-medium text-slate-700 dark:text-gray-300">Model</label>
               <span id="modelBadge" class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-console-elevated border border-console-border text-console-muted">
                 70B
               </span>
             </div>
             <select
               id="modelSelect"
-              class="w-full bg-console-bg border border-console-border focus:border-console-accent rounded-xl px-3 py-2.5 text-xs font-mono text-white focus:outline-none transition"
+              class="w-full bg-console-bg border border-console-border focus:border-console-accent rounded-xl px-3 py-2.5 text-xs font-mono text-slate-900 dark:text-white focus:outline-none transition"
             >
               <option value="llama-3.3-70b-versatile">llama-3.3-70b-versatile</option>
               <option value="llama-3.1-8b-instant">llama-3.1-8b-instant</option>
@@ -667,7 +737,7 @@
                 id="customModelInput"
                 type="text"
                 placeholder="e.g. meta-llama/llama-4-scout-17b-16e-instruct"
-                class="w-full bg-console-bg border border-console-border focus:border-console-accent rounded-xl px-3 py-2 text-xs font-mono text-white placeholder-console-dim focus:outline-none transition"
+                class="w-full bg-console-bg border border-console-border focus:border-console-accent rounded-xl px-3 py-2 text-xs font-mono text-slate-900 dark:text-white placeholder-console-dim focus:outline-none transition"
               />
             </div>
           </div>
@@ -676,13 +746,13 @@
           <div class="p-3.5 rounded-xl bg-console-bg border border-console-border">
             <div class="flex items-center justify-between">
               <div class="flex items-center gap-2">
-                <div class="w-7 h-7 rounded-lg bg-sky-500/10 border border-sky-500/30 flex items-center justify-center text-sky-400">
+                <div class="w-7 h-7 rounded-lg bg-sky-500/10 border border-sky-500/30 flex items-center justify-center text-sky-500 dark:text-sky-400">
                   <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                     <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
                   </svg>
                 </div>
                 <div>
-                  <div class="text-xs font-medium text-white">Browser Search</div>
+                  <div class="text-xs font-medium text-slate-900 dark:text-white">Browser Search</div>
                   <div class="text-[11px] text-console-dim">Live web grounding</div>
                 </div>
               </div>
@@ -697,19 +767,19 @@
               >
                 <span
                   id="browserSearchKnob"
-                  class="pointer-events-none inline-block h-4 w-4 transform rounded-full bg-gray-400 shadow ring-0 transition duration-200 ease-in-out translate-x-0"
+                  class="pointer-events-none inline-block h-4 w-4 transform rounded-full bg-slate-400 dark:bg-gray-400 shadow ring-0 transition duration-200 ease-in-out translate-x-0"
                 ></span>
               </button>
             </div>
             <p id="browserSearchNote" class="mt-2.5 text-[11px] text-console-muted leading-relaxed">
-              Off: Uses selected standard LLM. Turn ON to route queries through <code class="text-sky-400 font-mono">groq/compound</code> with real-time web search.
+              Off: Uses selected standard LLM. Turn ON to route queries through <code class="text-sky-600 dark:text-sky-400 font-mono">groq/compound</code> with real-time web search.
             </p>
           </div>
 
           <!-- 3. TEMPERATURE SLIDER -->
           <div>
             <div class="flex items-center justify-between mb-2">
-              <label for="tempSlider" class="text-xs font-medium text-gray-300">Temperature</label>
+              <label for="tempSlider" class="text-xs font-medium text-slate-700 dark:text-gray-300">Temperature</label>
               <span id="tempValue" class="text-xs font-mono text-console-accent bg-console-bg border border-console-border px-2 py-0.5 rounded">
                 0.7
               </span>
@@ -732,14 +802,14 @@
           <!-- 4. SYSTEM PROMPT -->
           <div>
             <div class="flex items-center justify-between mb-1.5">
-              <label for="systemPromptInput" class="text-xs font-medium text-gray-300">System Prompt</label>
-              <button id="resetSystemPromptBtn" type="button" class="text-[11px] text-console-dim hover:text-gray-300 transition">Reset</button>
+              <label for="systemPromptInput" class="text-xs font-medium text-slate-700 dark:text-gray-300">System Prompt</label>
+              <button id="resetSystemPromptBtn" type="button" class="text-[11px] text-console-dim hover:text-slate-800 dark:hover:text-gray-300 transition">Reset</button>
             </div>
             <textarea
               id="systemPromptInput"
               rows="3"
               placeholder="You are a helpful, accurate, and concise AI assistant powered by Groq."
-              class="w-full bg-groq-bg border border-groq-border focus:border-groq-orange rounded-lg px-3 py-2 text-xs text-gray-200 placeholder-groq-dim focus:outline-none resize-y leading-relaxed transition"
+              class="w-full bg-groq-bg border border-groq-border focus:border-groq-orange rounded-lg px-3 py-2 text-xs text-slate-800 dark:text-gray-200 placeholder-groq-dim focus:outline-none resize-y leading-relaxed transition"
             >You are a helpful, accurate, and concise AI assistant powered by Groq.</textarea>
           </div>
 
@@ -750,14 +820,14 @@
               <button
                 id="sidebarChangeKeyBtn"
                 type="button"
-                class="flex-1 py-2 px-3 rounded-lg bg-console-bg hover:bg-console-elevated border border-console-border text-xs text-gray-300 font-medium transition"
+                class="flex-1 py-2 px-3 rounded-lg bg-console-bg hover:bg-console-elevated border border-console-border text-xs text-slate-700 dark:text-gray-300 font-medium transition"
               >
                 Homepage / Key
               </button>
               <button
                 id="sidebarClearKeyBtn"
                 type="button"
-                class="py-2 px-3 rounded-lg bg-red-950/30 hover:bg-red-950/60 border border-red-500/30 text-xs text-red-400 font-medium transition"
+                class="py-2 px-3 rounded-lg bg-red-50 dark:bg-red-950/30 hover:bg-red-100 dark:hover:bg-red-950/60 border border-red-300 dark:border-red-500/30 text-xs text-red-600 dark:text-red-400 font-medium transition"
               >
                 Disconnect
               </button>
@@ -770,7 +840,7 @@
           <button
             id="clearChatBtn"
             type="button"
-            class="w-full py-2 px-3 rounded-lg bg-console-elevated hover:bg-console-border text-gray-200 text-xs font-medium flex items-center justify-center gap-2 border border-console-border transition"
+            class="w-full py-2 px-3 rounded-lg bg-console-elevated hover:bg-console-border text-slate-800 dark:text-gray-200 text-xs font-medium flex items-center justify-center gap-2 border border-console-border transition"
           >
             <svg class="w-3.5 h-3.5 text-console-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
@@ -789,6 +859,7 @@
       const CHAT_COMPLETIONS_URL = 'https://api.groq.com/openai/v1/chat/completions';
       const MODELS_LIST_URL = 'https://api.groq.com/openai/v1/models';
       const STORAGE_KEY = 'inference_playground_api_key';
+      const THEME_STORAGE_KEY = 'inference_playground_theme';
 
       function safeGetStorage(key) {
         try {
@@ -813,6 +884,45 @@
           // Ignore storage SecurityError in sandboxed frames
         }
       }
+
+      // --- Theme Management (Light / Dark Mode) ---
+      const savedTheme = safeGetStorage(THEME_STORAGE_KEY);
+      const initialTheme = (savedTheme === 'light' || savedTheme === 'dark') ? savedTheme : 'dark';
+
+      function applyTheme(theme) {
+        const isDark = theme === 'dark';
+        document.documentElement.classList.toggle('dark', isDark);
+
+        // Update Highlight.js stylesheet to match theme
+        const hljsLink = document.getElementById('hljsThemeLink');
+        if (hljsLink) {
+          hljsLink.href = isDark
+            ? 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css'
+            : 'https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css';
+        }
+
+        // Update all theme toggle buttons (Homepage + Playground)
+        document.querySelectorAll('[data-theme-toggle]').forEach((btn) => {
+          const sunIcon = btn.querySelector('.theme-icon-sun');
+          const moonIcon = btn.querySelector('.theme-icon-moon');
+          const label = btn.querySelector('.theme-label');
+
+          if (sunIcon) sunIcon.classList.toggle('hidden', !isDark);
+          if (moonIcon) moonIcon.classList.toggle('hidden', isDark);
+          if (label) label.textContent = isDark ? 'Light' : 'Dark';
+        });
+
+        safeSetStorage(THEME_STORAGE_KEY, theme);
+      }
+
+      applyTheme(initialTheme);
+
+      document.querySelectorAll('[data-theme-toggle]').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const currentlyDark = document.documentElement.classList.contains('dark');
+          applyTheme(currentlyDark ? 'light' : 'dark');
+        });
+      });
 
       // --- Application State ---
       const state = {
@@ -974,19 +1084,19 @@
         if (state.browserSearch) {
           browserSearchToggle.classList.remove('bg-console-elevated');
           browserSearchToggle.classList.add('bg-sky-500');
-          browserSearchKnob.classList.remove('translate-x-0', 'bg-gray-400');
+          browserSearchKnob.classList.remove('translate-x-0', 'bg-slate-400', 'dark:bg-gray-400');
           browserSearchKnob.classList.add('translate-x-4', 'bg-white');
           headerSearchBadge.classList.remove('hidden');
           headerSearchBadge.classList.add('inline-flex');
-          browserSearchNote.innerHTML = 'ON: Queries are routed through <code class="text-sky-400 font-mono">groq/compound</code> with real-time web search enabled.';
+          browserSearchNote.innerHTML = 'ON: Queries are routed through <code class="text-sky-600 dark:text-sky-400 font-mono">groq/compound</code> with real-time web search enabled.';
         } else {
           browserSearchToggle.classList.add('bg-console-elevated');
           browserSearchToggle.classList.remove('bg-sky-500');
-          browserSearchKnob.classList.add('translate-x-0', 'bg-gray-400');
+          browserSearchKnob.classList.add('translate-x-0', 'bg-slate-400', 'dark:bg-gray-400');
           browserSearchKnob.classList.remove('translate-x-4', 'bg-white');
           headerSearchBadge.classList.add('hidden');
           headerSearchBadge.classList.remove('inline-flex');
-          browserSearchNote.innerHTML = 'Off: Uses selected standard LLM. Turn ON to route queries through <code class="text-sky-400 font-mono">groq/compound</code> with real-time web search.';
+          browserSearchNote.innerHTML = 'Off: Uses selected standard LLM. Turn ON to route queries through <code class="text-sky-600 dark:text-sky-400 font-mono">groq/compound</code> with real-time web search.';
         }
 
         // Update Key Masked Display & Homepage Key Indicators
@@ -1214,7 +1324,7 @@
           header.className = 'flex items-center justify-between px-3 py-1.5 bg-console-surface border-b border-console-border text-[11px] font-mono text-console-muted';
           header.innerHTML = `
             <span>${escapeHtml(langLabel)}</span>
-            <button type="button" class="copy-code-btn flex items-center gap-1 text-gray-400 hover:text-white transition">
+            <button type="button" class="copy-code-btn flex items-center gap-1 text-slate-600 dark:text-gray-400 hover:text-slate-900 dark:hover:text-white transition">
               <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
               </svg>
@@ -1233,9 +1343,9 @@
             textarea.select();
             try {
               document.execCommand('copy');
-              copyBtn.innerHTML = `<span class="text-emerald-400">Copied!</span>`;
+              copyBtn.innerHTML = `<span class="text-emerald-600 dark:text-emerald-400">Copied!</span>`;
             } catch (_) {
-              copyBtn.innerHTML = `<span class="text-red-400">Failed</span>`;
+              copyBtn.innerHTML = `<span class="text-red-500 dark:text-red-400">Failed</span>`;
             }
             document.body.removeChild(textarea);
 
@@ -1260,7 +1370,7 @@
         wrapper.className = 'max-w-4xl mx-auto flex justify-end';
 
         const bubble = document.createElement('div');
-        bubble.className = 'max-w-[85%] sm:max-w-[75%] bg-console-elevated border border-console-border text-gray-100 rounded-2xl rounded-tr-sm px-4 py-3 text-sm leading-relaxed whitespace-pre-wrap shadow-sm';
+        bubble.className = 'max-w-[85%] sm:max-w-[75%] bg-console-elevated border border-console-border text-slate-900 dark:text-gray-100 rounded-2xl rounded-tr-sm px-4 py-3 text-sm leading-relaxed whitespace-pre-wrap shadow-2xs';
         bubble.textContent = content;
 
         wrapper.appendChild(bubble);
@@ -1285,9 +1395,9 @@
         const header = document.createElement('div');
         header.className = 'flex flex-wrap items-center gap-2 mb-1.5';
         header.innerHTML = `
-          <span class="text-xs font-mono font-medium text-gray-300">${escapeHtml(modelName)}</span>
+          <span class="text-xs font-mono font-medium text-slate-700 dark:text-gray-300">${escapeHtml(modelName)}</span>
           ${isSearchEnabled ? `
-            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-sky-500/10 text-sky-400 border border-sky-500/30">
+            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-sky-500/10 text-sky-600 dark:text-sky-400 border border-sky-500/30">
               <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
               </svg>
@@ -1298,7 +1408,7 @@
 
         // Content Area
         const contentDiv = document.createElement('div');
-        contentDiv.className = 'markdown-body streaming-cursor text-gray-200';
+        contentDiv.className = 'markdown-body streaming-cursor text-slate-800 dark:text-gray-200';
 
         // Metrics Footer (Tokens/s & Latency)
         const metricsDiv = document.createElement('div');
@@ -1453,7 +1563,7 @@
 
           const metricBadge = `⚡ ${tokensPerSec} tok/s · TTFT ${ttftMs}ms · ${completionTokens} tokens`;
           metricsDiv.innerHTML = `
-            <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-console-surface border border-console-border text-emerald-400">
+            <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-console-surface border border-console-border text-emerald-600 dark:text-emerald-400">
               ${metricBadge}
             </span>
           `;
@@ -1467,14 +1577,14 @@
 
         } catch (err) {
           if (err.name === 'AbortError') {
-            metricsDiv.innerHTML = `<span class="text-amber-400">Generation stopped by user.</span>`;
+            metricsDiv.innerHTML = `<span class="text-amber-600 dark:text-amber-400">Generation stopped by user.</span>`;
             if (accumulatedText) {
               state.messages.push({ role: 'assistant', content: accumulatedText });
             }
           } else {
             showError(err.message || 'Failed to communicate with inference API.');
             if (!accumulatedText) {
-              contentDiv.innerHTML = `<span class="text-red-400 text-xs">Request failed. See error banner above.</span>`;
+              contentDiv.innerHTML = `<span class="text-red-500 dark:text-red-400 text-xs">Request failed. See error banner above.</span>`;
             }
           }
         } finally {
