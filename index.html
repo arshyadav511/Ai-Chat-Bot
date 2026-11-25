@@ -1,0 +1,1533 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>AI Chat Playground</title>
+  <!-- Tailwind CSS -->
+  <script src="https://cdn.tailwindcss.com"></script>
+  <!-- Google Fonts: Inter & JetBrains Mono -->
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet" />
+  <!-- Marked.js for Markdown Rendering & Highlight.js for Syntax Highlighting -->
+  <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github-dark.min.css" />
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/highlight.min.js"></script>
+
+  <script>
+    tailwind.config = {
+      darkMode: 'class',
+      theme: {
+        extend: {
+          fontFamily: {
+            sans: ['Inter', 'sans-serif'],
+            mono: ['JetBrains Mono', 'monospace'],
+          },
+          colors: {
+            console: {
+              bg: '#0d0e11',
+              surface: '#14151a',
+              elevated: '#1b1d24',
+              border: '#262830',
+              borderHover: '#383b47',
+              accent: '#f55036',
+              accentHover: '#e0432a',
+              text: '#f3f4f6',
+              muted: '#9ca3af',
+              dim: '#6b7280',
+            },
+            groq: {
+              bg: '#0d0e11',
+              surface: '#14151a',
+              elevated: '#1b1d24',
+              border: '#262830',
+              borderHover: '#383b47',
+              orange: '#f55036',
+              orangeHover: '#e0432a',
+              text: '#f3f4f6',
+              muted: '#9ca3af',
+              dim: '#6b7280',
+            }
+          }
+        }
+      }
+    };
+  </script>
+
+  <style>
+    /* Custom Scrollbar for Console Aesthetic */
+    ::-webkit-scrollbar {
+      width: 6px;
+      height: 6px;
+    }
+    ::-webkit-scrollbar-track {
+      background: #0d0e11;
+    }
+    ::-webkit-scrollbar-thumb {
+      background: #262830;
+      border-radius: 3px;
+    }
+    ::-webkit-scrollbar-thumb:hover {
+      background: #383b47;
+    }
+
+    /* Range Slider Styling */
+    input[type="range"] {
+      -webkit-appearance: none;
+      appearance: none;
+      background: transparent;
+      cursor: pointer;
+    }
+    input[type="range"]::-webkit-slider-runnable-track {
+      height: 5px;
+      background: #262830;
+      border-radius: 999px;
+    }
+    input[type="range"]::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      height: 15px;
+      width: 15px;
+      border-radius: 50%;
+      background: #f55036;
+      margin-top: -5px;
+      box-shadow: 0 0 0 2px #14151a;
+      transition: transform 0.12s ease;
+    }
+    input[type="range"]::-webkit-slider-thumb:hover {
+      transform: scale(1.15);
+    }
+
+    /* Markdown Content Styling */
+    .markdown-body {
+      line-height: 1.65;
+      font-size: 0.9375rem;
+      color: #e5e7eb;
+      word-break: break-word;
+    }
+    .markdown-body p {
+      margin-bottom: 0.75rem;
+    }
+    .markdown-body p:last-child {
+      margin-bottom: 0;
+    }
+    .markdown-body ul, .markdown-body ol {
+      margin-left: 1.25rem;
+      margin-bottom: 0.75rem;
+    }
+    .markdown-body ul {
+      list-style-type: disc;
+    }
+    .markdown-body ol {
+      list-style-type: decimal;
+    }
+    .markdown-body li {
+      margin-bottom: 0.25rem;
+    }
+    .markdown-body strong {
+      color: #ffffff;
+      font-weight: 600;
+    }
+    .markdown-body a {
+      color: #f55036;
+      text-decoration: underline;
+    }
+    .markdown-body code:not(pre code) {
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.825rem;
+      background-color: #1f222b;
+      color: #f87171;
+      padding: 0.15rem 0.35rem;
+      border-radius: 0.25rem;
+      border: 1px solid #2d303d;
+    }
+    .markdown-body pre {
+      position: relative;
+      background-color: #0b0c0f !important;
+      border: 1px solid #262830;
+      border-radius: 0.5rem;
+      margin: 0.75rem 0;
+      overflow: hidden;
+    }
+    .markdown-body pre code {
+      display: block;
+      padding: 0.875rem 1rem;
+      overflow-x: auto;
+      font-family: 'JetBrains Mono', monospace;
+      font-size: 0.8125rem;
+      line-height: 1.5;
+      background: transparent !important;
+    }
+    .markdown-body blockquote {
+      border-left: 3px solid #f55036;
+      padding-left: 0.875rem;
+      color: #9ca3af;
+      margin: 0.75rem 0;
+    }
+    .markdown-body table {
+      width: 100%;
+      border-collapse: collapse;
+      margin: 0.75rem 0;
+      font-size: 0.85rem;
+    }
+    .markdown-body th, .markdown-body td {
+      border: 1px solid #262830;
+      padding: 0.5rem 0.75rem;
+      text-align: left;
+    }
+    .markdown-body th {
+      background-color: #1b1d24;
+      color: #fff;
+    }
+
+    /* Blinking cursor during streaming */
+    .streaming-cursor::after {
+      content: '▋';
+      display: inline-block;
+      color: #f55036;
+      margin-left: 2px;
+      animation: blink 0.9s infinite;
+    }
+    @keyframes blink {
+      0%, 49% { opacity: 1; }
+      50%, 100% { opacity: 0; }
+    }
+
+    /* Homepage Subtle Radial Glow */
+    .hero-glow {
+      background: radial-gradient(circle at 50% 0%, rgba(245, 80, 54, 0.16) 0%, rgba(13, 14, 17, 0) 68%);
+    }
+  </style>
+</head>
+<body class="bg-console-bg text-console-text font-sans antialiased min-h-screen flex flex-col selection:bg-console-accent selection:text-white">
+
+  <!-- ==================== 1. HOMEPAGE / LANDING VIEW ==================== -->
+  <div id="homepageView" class="flex-1 flex flex-col bg-console-bg hero-glow overflow-y-auto">
+
+    <!-- Homepage Top Navigation Bar -->
+    <nav class="sticky top-0 z-30 bg-console-bg/85 backdrop-blur-md border-b border-console-border">
+      <div class="max-w-6xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between">
+        <!-- Brand Logo -->
+        <a href="#top" class="flex items-center gap-2.5 group">
+          <div class="w-8 h-8 rounded-lg bg-groq-orange flex items-center justify-center text-white font-bold text-base shadow-md shadow-groq-orange/25 group-hover:scale-105 transition">
+            G
+          </div>
+          <span class="font-semibold text-base tracking-tight text-white">Groq<span class="text-groq-muted font-normal">Playground</span></span>
+        </a>
+
+        <!-- Center Anchor Links -->
+        <div class="hidden md:flex items-center gap-7 text-xs font-medium text-console-muted">
+          <a href="#api-setup" class="hover:text-white transition">API Setup</a>
+          <a href="#features" class="hover:text-white transition">Capabilities</a>
+          <a href="#models" class="hover:text-white transition">Supported Models</a>
+        </div>
+
+        <!-- Right Quick Action -->
+        <div class="flex items-center gap-3">
+          <span id="homeKeyBadge" class="hidden items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-mono bg-emerald-500/10 text-emerald-400 border border-emerald-500/30">
+            <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+            Key Connected
+          </span>
+          <button
+            id="launchPlaygroundNavBtn"
+            type="button"
+            class="px-3.5 py-2 rounded-lg bg-console-elevated hover:bg-console-border border border-console-border text-xs font-medium text-white transition flex items-center gap-1.5"
+          >
+            <span>Launch Playground</span>
+            <svg class="w-3.5 h-3.5 text-console-accent" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+            </svg>
+          </button>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Hero Banner Section -->
+    <section id="top" class="max-w-6xl mx-auto px-4 sm:px-6 pt-14 pb-10 text-center">
+      <!-- Live Telemetry Pill -->
+      <div class="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-console-surface border border-console-border text-xs font-mono text-gray-300 mb-6 shadow-sm">
+        <span class="w-2 h-2 rounded-full bg-console-accent animate-pulse"></span>
+        <span>LPU™ Inference Engine · <strong class="text-white">~850 tok/s</strong> real-time streaming</span>
+      </div>
+
+      <h1 class="text-3xl sm:text-5xl font-bold tracking-tight text-white max-w-3xl mx-auto leading-[1.15] mb-4">
+        Ultra-Low Latency Groq AI Chat &amp; <span class="text-groq-orange">Compound Web Search</span>
+      </h1>
+      <p class="text-sm sm:text-base text-groq-muted max-w-2xl mx-auto leading-relaxed mb-8">
+        Experience instant LPU™ token generation across Llama 3.3, Qwen 3, GPT-OSS, and Groq Compound models. Connect your Groq API key below to enter the interactive console playground.
+      </p>
+
+      <div class="flex flex-wrap items-center justify-center gap-3">
+        <a
+          href="#api-setup"
+          class="px-5 py-2.5 rounded-xl bg-groq-orange hover:bg-groq-orangeHover text-white text-xs sm:text-sm font-semibold transition shadow-lg shadow-groq-orange/25 flex items-center gap-2"
+        >
+          <span>Connect Groq API Key</span>
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 14l-7 7m0 0l-7-7m7 7V3" />
+          </svg>
+        </a>
+        <a
+          href="https://console.groq.com/keys"
+          target="_blank"
+          rel="noopener noreferrer"
+          class="px-5 py-2.5 rounded-xl bg-groq-surface hover:bg-groq-elevated border border-groq-border text-gray-200 text-xs sm:text-sm font-medium transition flex items-center gap-2"
+        >
+          <span>Get Free Groq API Key</span>
+          <svg class="w-3.5 h-3.5 text-groq-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M10 6H6a2 2 0 00-2 2v10a2 2 0 002 2h10a2 2 0 002-2v-4M14 4h6m0 0v6m0-6L10 14" />
+          </svg>
+        </a>
+      </div>
+    </section>
+
+    <!-- DEDICATED API KEY SETUP SECTION INSIDE HOMEPAGE -->
+    <section id="api-setup" class="max-w-2xl w-full mx-auto px-4 sm:px-6 py-6">
+      <div class="bg-groq-surface border border-groq-border rounded-2xl p-6 sm:p-8 shadow-2xl relative overflow-hidden">
+        <!-- Subtle top accent bar -->
+        <div class="absolute top-0 inset-x-0 h-1 bg-gradient-to-r from-groq-orange via-amber-500 to-groq-orange"></div>
+
+        <div class="flex items-start justify-between gap-4 mb-5">
+          <div class="flex items-center gap-3">
+            <div class="w-10 h-10 rounded-xl bg-groq-orange/15 border border-groq-orange/40 flex items-center justify-center shrink-0">
+              <svg class="w-5 h-5 text-groq-orange" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 7a2 2 0 012 2m4 0a6 6 0 01-7.743 5.743L11 17H9v2H7v2H4a1 1 0 01-1-1v-2.586a1 1 0 01.293-.707l5.964-5.964A6 6 0 1121 9z" />
+              </svg>
+            </div>
+            <div>
+              <h2 class="text-base sm:text-lg font-semibold text-white">Step 1: Enter Your Groq API Key</h2>
+              <p class="text-xs text-groq-muted">Required to authenticate live Groq inference &amp; compound web search</p>
+            </div>
+          </div>
+          <span class="text-[11px] font-mono px-2.5 py-1 rounded-md bg-groq-bg border border-groq-border text-groq-muted hidden sm:inline">
+            CLIENT-SIDE ONLY
+          </span>
+        </div>
+
+        <form id="apiKeyForm" class="space-y-4">
+          <div>
+            <div class="flex items-center justify-between mb-1.5">
+              <label for="apiKeyInput" class="text-xs font-medium text-gray-300">GroqCloud Secret Key</label>
+              <a href="https://console.groq.com/keys" target="_blank" rel="noopener noreferrer" class="text-xs text-groq-orange hover:underline font-medium">
+                Create key at console.groq.com →
+              </a>
+            </div>
+            <div class="relative">
+              <input
+                id="apiKeyInput"
+                type="password"
+                placeholder="gsk_xxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxxx"
+                autocomplete="off"
+                spellcheck="false"
+                required
+                class="w-full bg-console-bg border border-console-border focus:border-console-accent rounded-xl px-4 py-3 pr-11 text-sm font-mono text-white placeholder-console-dim focus:outline-none transition"
+              />
+              <button
+                type="button"
+                id="toggleKeyVisibility"
+                title="Show or hide API key"
+                class="absolute right-3 top-1/2 -translate-y-1/2 text-console-dim hover:text-gray-200 p-1.5 rounded-lg transition"
+              >
+                <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+                </svg>
+              </button>
+            </div>
+            <p id="apiKeyError" class="text-xs text-red-400 mt-2 hidden"></p>
+          </div>
+
+          <!-- Storage Option & Submit -->
+          <div class="flex flex-col sm:flex-row sm:items-center justify-between gap-3 pt-1">
+            <label class="inline-flex items-center gap-2 cursor-pointer select-none text-xs text-console-muted hover:text-gray-300">
+              <input
+                id="rememberKeyCheckbox"
+                type="checkbox"
+                checked
+                class="w-4 h-4 rounded bg-console-bg border-console-border text-console-accent focus:ring-console-accent focus:ring-offset-0"
+              />
+              <span>Remember key in browser storage</span>
+            </label>
+
+            <button
+              type="submit"
+              id="saveKeyBtn"
+              class="w-full sm:w-auto bg-console-accent hover:bg-console-accentHover text-white font-semibold text-xs sm:text-sm py-3 px-6 rounded-xl transition flex items-center justify-center gap-2 shadow-lg shadow-console-accent/25"
+            >
+              <span>Verify &amp; Launch Playground</span>
+              <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M13 10V3L4 14h7v7l9-11h-7z" />
+              </svg>
+            </button>
+          </div>
+        </form>
+
+        <!-- Security Note -->
+        <div class="mt-5 pt-4 border-t border-groq-border flex items-center justify-between text-[11px] text-groq-dim">
+          <span>🔒 Direct browser-to-Groq HTTPS requests (<code>api.groq.com</code>). No intermediary server.</span>
+          <button id="clearSavedKeyHomeBtn" type="button" class="hidden text-red-400 hover:underline font-medium shrink-0 ml-2">
+            Forget Saved Key
+          </button>
+        </div>
+      </div>
+    </section>
+
+    <!-- FEATURE & MODEL HIGHLIGHTS GRID -->
+    <section id="features" class="max-w-6xl mx-auto px-4 sm:px-6 py-12">
+      <div class="grid grid-cols-1 md:grid-cols-3 gap-5">
+        <!-- Card 1: Switchable Models -->
+        <div id="models" class="bg-console-surface border border-console-border rounded-2xl p-6 hover:border-console-borderHover transition">
+          <div class="w-9 h-9 rounded-lg bg-console-accent/15 border border-console-accent/30 flex items-center justify-center text-console-accent mb-4">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+            </svg>
+          </div>
+          <h3 class="text-sm font-semibold text-white mb-1.5">Switchable Foundation Models</h3>
+          <p class="text-xs text-console-muted leading-relaxed mb-4">
+            Hot-swap between flagship open models and custom model IDs mid-conversation without losing context.
+          </p>
+          <div class="flex flex-wrap gap-1.5 font-mono text-[10px]">
+            <span class="px-2 py-0.5 rounded bg-console-bg border border-console-border text-gray-300">llama-3.3-70b</span>
+            <span class="px-2 py-0.5 rounded bg-console-bg border border-console-border text-gray-300">llama-3.1-8b</span>
+            <span class="px-2 py-0.5 rounded bg-console-bg border border-console-border text-gray-300">gpt-oss-120b</span>
+            <span class="px-2 py-0.5 rounded bg-console-bg border border-console-border text-gray-300">qwen3-32b</span>
+          </div>
+        </div>
+
+        <!-- Card 2: Precision Sampling Controls -->
+        <div class="bg-console-surface border border-console-border rounded-2xl p-6 hover:border-console-borderHover transition">
+          <div class="w-9 h-9 rounded-lg bg-amber-500/15 border border-amber-500/30 flex items-center justify-center text-amber-400 mb-4">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+            </svg>
+          </div>
+          <h3 class="text-sm font-semibold text-white mb-1.5">Precision Temperature &amp; System Control</h3>
+          <p class="text-xs text-console-muted leading-relaxed mb-4">
+            Fine-tune sampling temperature from <code class="text-gray-300 font-mono">0.0</code> deterministic code output up to <code class="text-gray-300 font-mono">2.0</code> creative ideation, paired with custom system instructions.
+          </p>
+          <div class="text-[11px] font-mono text-console-dim bg-console-bg border border-console-border rounded-lg px-3 py-2">
+            temperature: <span class="text-console-accent">0.0</span> ───●─── <span class="text-console-accent">2.0</span>
+          </div>
+        </div>
+
+        <!-- Card 3: Browser Search Toggle -->
+        <div class="bg-console-surface border border-console-border rounded-2xl p-6 hover:border-console-borderHover transition">
+          <div class="w-9 h-9 rounded-lg bg-sky-500/15 border border-sky-500/30 flex items-center justify-center text-sky-400 mb-4">
+            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+            </svg>
+          </div>
+          <h3 class="text-sm font-semibold text-white mb-1.5">Browser Search (On / Off)</h3>
+          <p class="text-xs text-console-muted leading-relaxed mb-4">
+            Toggle real-time web grounding on demand. Automatically routes queries through compound search models for up-to-date answers and sources.
+          </p>
+          <div class="inline-flex items-center gap-2 text-[11px] font-mono text-sky-400 bg-sky-500/10 border border-sky-500/30 rounded-lg px-2.5 py-1">
+            <span class="w-1.5 h-1.5 rounded-full bg-sky-400"></span>
+            <span>compound search ready</span>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Homepage Footer -->
+    <footer class="mt-auto border-t border-groq-border py-5 px-4 text-center text-xs text-groq-dim">
+      Groq Playground · Powered by Groq LPU™ Inference
+    </footer>
+  </div>
+
+  <!-- ==================== 2. PLAYGROUND VIEW (HIDDEN UNTIL UNLOCKED) ==================== -->
+  <div id="playgroundView" class="hidden h-screen flex-col overflow-hidden">
+
+    <!-- TOP NAVIGATION BAR -->
+    <header class="h-13 min-h-[52px] bg-groq-surface border-b border-groq-border px-4 flex items-center justify-between z-20">
+      <!-- Left: Clickable Logo to return to Homepage & Breadcrumb -->
+      <div class="flex items-center gap-3">
+        <button
+          id="goHomeLogoBtn"
+          type="button"
+          title="Return to Homepage & API Setup"
+          class="flex items-center gap-2 hover:opacity-90 transition group"
+        >
+          <div class="w-7 h-7 rounded-md bg-groq-orange flex items-center justify-center text-white font-bold text-sm shadow-sm group-hover:scale-105 transition">
+            G
+          </div>
+          <span class="font-semibold text-sm tracking-tight text-white">Groq<span class="text-groq-muted font-normal">Console</span></span>
+        </button>
+        <span class="text-groq-border hidden sm:inline">/</span>
+        <span class="text-xs font-medium text-gray-300 bg-groq-elevated border border-groq-border px-2.5 py-1 rounded-md hidden sm:inline-flex items-center gap-1.5">
+          <span class="w-1.5 h-1.5 rounded-full bg-emerald-400"></span>
+          Playground
+        </span>
+      </div>
+
+      <!-- Right: Active Search Pill, Home / Key Status Button, Mobile Sidebar Toggle -->
+      <div class="flex items-center gap-2 sm:gap-3">
+        <!-- Active Search Indicator Pill -->
+        <div id="headerSearchBadge" class="hidden items-center gap-1.5 px-2.5 py-1 rounded-full text-[11px] font-medium bg-sky-500/10 text-sky-400 border border-sky-500/30">
+          <svg class="w-3 h-3" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+          </svg>
+          <span>Web Search ON</span>
+        </div>
+
+        <!-- Home / API Key Button -->
+        <button
+          id="manageKeyBtn"
+          type="button"
+          title="Return to Homepage or Change API Key"
+          class="flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-console-bg hover:bg-console-elevated border border-console-border text-xs text-gray-300 transition"
+        >
+          <span id="keyStatusDot" class="w-2 h-2 rounded-full bg-emerald-400"></span>
+          <span id="keyMaskedText" class="font-mono text-[11px] text-console-muted hidden sm:inline">gsk_••••</span>
+          <span class="text-[11px] font-medium text-gray-300">Home / Key</span>
+        </button>
+
+        <!-- Mobile Config Toggle Button -->
+        <button
+          id="toggleSidebarBtn"
+          type="button"
+          title="Toggle Parameters"
+          class="lg:hidden p-2 rounded-lg bg-console-bg hover:bg-console-elevated border border-console-border text-gray-300 transition"
+        >
+          <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+          </svg>
+        </button>
+      </div>
+    </header>
+
+    <!-- MAIN WORKSPACE -->
+    <div class="flex-1 flex overflow-hidden relative">
+
+      <!-- LEFT / CENTER: CHAT AREA -->
+      <main class="flex-1 flex flex-col min-w-0 bg-console-bg">
+
+        <!-- Error Banner -->
+        <div id="errorBanner" class="hidden bg-red-950/80 border-b border-red-500/40 px-4 py-2.5 flex items-center justify-between gap-3 text-xs text-red-200">
+          <div class="flex items-center gap-2 min-w-0">
+            <svg class="w-4 h-4 text-red-400 shrink-0" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 8v4m0 4h.01M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            </svg>
+            <span id="errorBannerText" class="truncate">An error occurred.</span>
+          </div>
+          <button id="dismissErrorBtn" type="button" class="text-red-300 hover:text-white font-medium shrink-0">Dismiss</button>
+        </div>
+
+        <!-- Scrollable Chat Messages Container -->
+        <div id="chatContainer" class="flex-1 overflow-y-auto px-4 sm:px-6 py-6 space-y-6">
+          <!-- Empty State / Starter Prompts -->
+          <div id="emptyState" class="max-w-2xl mx-auto my-auto pt-8 sm:pt-16 text-center">
+            <div class="w-12 h-12 rounded-2xl bg-groq-surface border border-groq-border flex items-center justify-center mx-auto mb-4 shadow-lg">
+              <span class="text-groq-orange font-bold text-xl">G</span>
+            </div>
+            <h2 class="text-lg font-semibold text-white mb-1">Groq Console Playground</h2>
+            <p class="text-xs sm:text-sm text-groq-muted max-w-md mx-auto mb-6">
+              Ultra-low latency LPU™ inference. Switch models, adjust temperature, or toggle Browser Search in the right panel.
+            </p>
+
+            <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 text-left">
+              <button
+                type="button"
+                data-prompt="Write a clean, well-commented binary search function in Python with time complexity analysis."
+                class="starter-prompt p-3.5 rounded-xl bg-console-surface hover:bg-console-elevated border border-console-border hover:border-console-borderHover transition group"
+              >
+                <div class="text-xs font-semibold text-white group-hover:text-console-accent transition mb-1">Code Generation</div>
+                <div class="text-[11px] text-console-muted line-clamp-2">Write a binary search function in Python with complexity analysis.</div>
+              </button>
+
+              <button
+                type="button"
+                data-prompt="What are the most notable breakthroughs in open-weights AI models this week? Cite sources."
+                data-enable-search="true"
+                class="starter-prompt p-3.5 rounded-xl bg-console-surface hover:bg-console-elevated border border-console-border hover:border-console-borderHover transition group"
+              >
+                <div class="flex items-center justify-between mb-1">
+                  <span class="text-xs font-semibold text-white group-hover:text-sky-400 transition">Live Web Research</span>
+                  <span class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-sky-500/10 text-sky-400 border border-sky-500/30">Search ON</span>
+                </div>
+                <div class="text-[11px] text-console-muted line-clamp-2">Search recent breakthroughs in open-weights AI models with citations.</div>
+              </button>
+
+              <button
+                type="button"
+                data-prompt="Explain how speculative decoding accelerates LLM token generation in 4 concise bullet points."
+                class="starter-prompt p-3.5 rounded-xl bg-console-surface hover:bg-console-elevated border border-console-border hover:border-console-borderHover transition group"
+              >
+                <div class="text-xs font-semibold text-white group-hover:text-console-accent transition mb-1">Technical Concept</div>
+                <div class="text-[11px] text-console-muted line-clamp-2">Explain how speculative decoding accelerates token generation.</div>
+              </button>
+
+              <button
+                type="button"
+                data-prompt="Brainstorm 5 creative SaaS micro-product ideas for solo developers."
+                class="starter-prompt p-3.5 rounded-xl bg-console-surface hover:bg-console-elevated border border-console-border hover:border-console-borderHover transition group"
+              >
+                <div class="text-xs font-semibold text-white group-hover:text-console-accent transition mb-1">Creative Ideation</div>
+                <div class="text-[11px] text-console-muted line-clamp-2">Brainstorm 5 creative SaaS micro-product ideas for solo developers.</div>
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Bottom Prompt Composer -->
+        <div class="border-t border-console-border bg-console-surface/80 backdrop-blur-md px-4 sm:px-6 py-3.5 shrink-0">
+          <div class="max-w-4xl mx-auto">
+            <div class="relative flex items-end gap-2 bg-console-bg border border-console-border focus-within:border-console-accent rounded-2xl p-2 shadow-inner transition">
+              <textarea
+                id="promptInput"
+                rows="1"
+                placeholder="Enter a prompt... (Shift + Enter for new line)"
+                class="flex-1 bg-transparent text-sm text-white placeholder-console-dim px-2.5 py-2 resize-none max-h-48 focus:outline-none leading-relaxed"
+              ></textarea>
+
+              <div class="flex items-center gap-1.5 shrink-0 pb-0.5">
+                <button
+                  id="stopBtn"
+                  type="button"
+                  title="Stop generation"
+                  class="hidden items-center gap-1.5 px-3 py-2 rounded-xl bg-red-500/15 hover:bg-red-500/25 border border-red-500/40 text-red-400 text-xs font-medium transition"
+                >
+                  <span class="w-2 h-2 rounded-xs bg-red-400"></span>
+                  <span>Stop</span>
+                </button>
+
+                <button
+                  id="sendBtn"
+                  type="button"
+                  title="Send prompt (Enter)"
+                  class="px-3.5 py-2 rounded-xl bg-console-accent hover:bg-console-accentHover disabled:opacity-40 disabled:cursor-not-allowed text-white text-xs font-semibold transition flex items-center gap-1.5 shadow-sm"
+                >
+                  <span>Send</span>
+                  <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M12 19l9 2-9-18-9 18 9-2zm0 0v-8" />
+                  </svg>
+                </button>
+              </div>
+            </div>
+
+            <!-- Active Parameter Telemetry Strip -->
+            <div class="flex flex-wrap items-center justify-between gap-2 mt-2 px-1 text-[11px] font-mono text-console-dim">
+              <div class="flex items-center gap-3">
+                <span>Model: <strong id="activeModelFooter" class="text-gray-300 font-medium">llama-3.3-70b-versatile</strong></span>
+                <span>Temp: <strong id="activeTempFooter" class="text-gray-300 font-medium">0.7</strong></span>
+              </div>
+              <span id="lastMetricsSummary" class="text-emerald-400"></span>
+            </div>
+          </div>
+        </div>
+      </main>
+
+      <!-- MOBILE SIDEBAR BACKDROP -->
+      <div id="sidebarBackdrop" class="hidden fixed inset-0 bg-black/60 backdrop-blur-xs z-20 lg:hidden"></div>
+
+      <!-- RIGHT: PARAMETERS & MODEL CONFIGURATION SIDEBAR -->
+      <aside
+        id="configSidebar"
+        class="fixed lg:static inset-y-0 right-0 z-30 w-80 max-w-[88vw] bg-console-surface border-l border-console-border flex flex-col transform translate-x-full lg:translate-x-0 transition-transform duration-200 ease-out"
+      >
+        <!-- Sidebar Header -->
+        <div class="h-13 min-h-[52px] px-4 border-b border-console-border flex items-center justify-between shrink-0">
+          <span class="text-xs font-semibold uppercase tracking-wider text-gray-300">Parameters</span>
+          <button id="closeSidebarBtn" type="button" class="lg:hidden p-1.5 rounded-lg text-console-muted hover:text-white hover:bg-console-elevated transition">
+            <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+            </svg>
+          </button>
+        </div>
+
+        <!-- Scrollable Controls Body -->
+        <div class="flex-1 overflow-y-auto p-4 space-y-5">
+
+          <!-- 1. MODEL SELECTOR -->
+          <div>
+            <div class="flex items-center justify-between mb-1.5">
+              <label for="modelSelect" class="text-xs font-medium text-gray-300">Model</label>
+              <span id="modelBadge" class="text-[10px] font-mono px-1.5 py-0.5 rounded bg-console-elevated border border-console-border text-console-muted">
+                70B
+              </span>
+            </div>
+            <select
+              id="modelSelect"
+              class="w-full bg-console-bg border border-console-border focus:border-console-accent rounded-xl px-3 py-2.5 text-xs font-mono text-white focus:outline-none transition"
+            >
+              <option value="llama-3.3-70b-versatile">llama-3.3-70b-versatile</option>
+              <option value="llama-3.1-8b-instant">llama-3.1-8b-instant</option>
+              <option value="openai/gpt-oss-120b">openai/gpt-oss-120b</option>
+              <option value="openai/gpt-oss-20b">openai/gpt-oss-20b</option>
+              <option value="qwen/qwen3-32b">qwen/qwen3-32b</option>
+              <option value="groq/compound">groq/compound (Web Search)</option>
+              <option value="groq/compound-mini">groq/compound-mini (Fast Search)</option>
+              <option value="custom">Custom Model ID...</option>
+            </select>
+
+            <!-- Custom Model Input -->
+            <div id="customModelWrapper" class="hidden mt-2">
+              <input
+                id="customModelInput"
+                type="text"
+                placeholder="e.g. meta-llama/llama-4-scout-17b-16e-instruct"
+                class="w-full bg-console-bg border border-console-border focus:border-console-accent rounded-xl px-3 py-2 text-xs font-mono text-white placeholder-console-dim focus:outline-none transition"
+              />
+            </div>
+          </div>
+
+          <!-- 2. BROWSER SEARCH TOGGLE -->
+          <div class="p-3.5 rounded-xl bg-console-bg border border-console-border">
+            <div class="flex items-center justify-between">
+              <div class="flex items-center gap-2">
+                <div class="w-7 h-7 rounded-lg bg-sky-500/10 border border-sky-500/30 flex items-center justify-center text-sky-400">
+                  <svg class="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+                  </svg>
+                </div>
+                <div>
+                  <div class="text-xs font-medium text-white">Browser Search</div>
+                  <div class="text-[11px] text-console-dim">Live web grounding</div>
+                </div>
+              </div>
+
+              <!-- Toggle Switch -->
+              <button
+                id="browserSearchToggle"
+                type="button"
+                role="switch"
+                aria-checked="false"
+                class="relative inline-flex h-5 w-9 shrink-0 cursor-pointer rounded-full border-2 border-transparent bg-console-elevated transition-colors duration-200 ease-in-out focus:outline-none"
+              >
+                <span
+                  id="browserSearchKnob"
+                  class="pointer-events-none inline-block h-4 w-4 transform rounded-full bg-gray-400 shadow ring-0 transition duration-200 ease-in-out translate-x-0"
+                ></span>
+              </button>
+            </div>
+            <p id="browserSearchNote" class="mt-2.5 text-[11px] text-console-muted leading-relaxed">
+              Off: Uses selected standard LLM. Turn ON to route queries through <code class="text-sky-400 font-mono">groq/compound</code> with real-time web search.
+            </p>
+          </div>
+
+          <!-- 3. TEMPERATURE SLIDER -->
+          <div>
+            <div class="flex items-center justify-between mb-2">
+              <label for="tempSlider" class="text-xs font-medium text-gray-300">Temperature</label>
+              <span id="tempValue" class="text-xs font-mono text-console-accent bg-console-bg border border-console-border px-2 py-0.5 rounded">
+                0.7
+              </span>
+            </div>
+            <input
+              id="tempSlider"
+              type="range"
+              min="0"
+              max="2"
+              step="0.1"
+              value="0.7"
+              class="w-full"
+            />
+            <div class="flex justify-between text-[10px] font-mono text-console-dim mt-1">
+              <span>0.0 (Deterministic)</span>
+              <span>2.0 (Creative)</span>
+            </div>
+          </div>
+
+          <!-- 4. SYSTEM PROMPT -->
+          <div>
+            <div class="flex items-center justify-between mb-1.5">
+              <label for="systemPromptInput" class="text-xs font-medium text-gray-300">System Prompt</label>
+              <button id="resetSystemPromptBtn" type="button" class="text-[11px] text-console-dim hover:text-gray-300 transition">Reset</button>
+            </div>
+            <textarea
+              id="systemPromptInput"
+              rows="3"
+              placeholder="You are a helpful, accurate, and concise AI assistant powered by Groq."
+              class="w-full bg-groq-bg border border-groq-border focus:border-groq-orange rounded-lg px-3 py-2 text-xs text-gray-200 placeholder-groq-dim focus:outline-none resize-y leading-relaxed transition"
+            >You are a helpful, accurate, and concise AI assistant powered by Groq.</textarea>
+          </div>
+
+          <!-- 5. API KEY & NAVIGATION -->
+          <div class="pt-2 border-t border-console-border space-y-2">
+            <div class="text-[11px] font-medium text-console-muted">Session &amp; Credentials</div>
+            <div class="flex gap-2">
+              <button
+                id="sidebarChangeKeyBtn"
+                type="button"
+                class="flex-1 py-2 px-3 rounded-lg bg-console-bg hover:bg-console-elevated border border-console-border text-xs text-gray-300 font-medium transition"
+              >
+                Homepage / Key
+              </button>
+              <button
+                id="sidebarClearKeyBtn"
+                type="button"
+                class="py-2 px-3 rounded-lg bg-red-950/30 hover:bg-red-950/60 border border-red-500/30 text-xs text-red-400 font-medium transition"
+              >
+                Disconnect
+              </button>
+            </div>
+          </div>
+        </div>
+
+        <!-- Sidebar Footer: Clear Chat -->
+        <div class="p-4 border-t border-console-border bg-console-surface shrink-0">
+          <button
+            id="clearChatBtn"
+            type="button"
+            class="w-full py-2 px-3 rounded-lg bg-console-elevated hover:bg-console-border text-gray-200 text-xs font-medium flex items-center justify-center gap-2 border border-console-border transition"
+          >
+            <svg class="w-3.5 h-3.5 text-console-muted" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+            </svg>
+            <span>Clear Conversation</span>
+          </button>
+        </div>
+      </aside>
+    </div>
+  </div>
+
+  <!-- ==================== JAVASCRIPT APPLICATION LOGIC ==================== -->
+  <script>
+    (() => {
+      // --- Constants & Safe Storage Helpers ---
+      const CHAT_COMPLETIONS_URL = 'https://api.groq.com/openai/v1/chat/completions';
+      const MODELS_LIST_URL = 'https://api.groq.com/openai/v1/models';
+      const STORAGE_KEY = 'inference_playground_api_key';
+
+      function safeGetStorage(key) {
+        try {
+          return window.localStorage.getItem(key) || '';
+        } catch (_) {
+          return '';
+        }
+      }
+
+      function safeSetStorage(key, value) {
+        try {
+          window.localStorage.setItem(key, value);
+        } catch (_) {
+          // Ignore storage SecurityError in sandboxed frames
+        }
+      }
+
+      function safeRemoveStorage(key) {
+        try {
+          window.localStorage.removeItem(key);
+        } catch (_) {
+          // Ignore storage SecurityError in sandboxed frames
+        }
+      }
+
+      // --- Application State ---
+      const state = {
+        apiKey: safeGetStorage(STORAGE_KEY),
+        messages: [], // { role: 'user' | 'assistant', content: string }
+        previousNonSearchModel: 'llama-3.3-70b-versatile',
+        temperature: 0.7,
+        browserSearch: false,
+        isStreaming: false,
+        abortController: null,
+      };
+
+      // --- DOM Elements ---
+      const homepageView = document.getElementById('homepageView');
+      const playgroundView = document.getElementById('playgroundView');
+      const homeKeyBadge = document.getElementById('homeKeyBadge');
+      const launchPlaygroundNavBtn = document.getElementById('launchPlaygroundNavBtn');
+      const clearSavedKeyHomeBtn = document.getElementById('clearSavedKeyHomeBtn');
+      const goHomeLogoBtn = document.getElementById('goHomeLogoBtn');
+
+      const apiKeyForm = document.getElementById('apiKeyForm');
+      const apiKeyInput = document.getElementById('apiKeyInput');
+      const apiKeyError = document.getElementById('apiKeyError');
+      const toggleKeyVisibility = document.getElementById('toggleKeyVisibility');
+      const rememberKeyCheckbox = document.getElementById('rememberKeyCheckbox');
+      const saveKeyBtn = document.getElementById('saveKeyBtn');
+
+      const manageKeyBtn = document.getElementById('manageKeyBtn');
+      const keyMaskedText = document.getElementById('keyMaskedText');
+      const headerSearchBadge = document.getElementById('headerSearchBadge');
+
+      const chatContainer = document.getElementById('chatContainer');
+      const emptyState = document.getElementById('emptyState');
+      const promptInput = document.getElementById('promptInput');
+      const sendBtn = document.getElementById('sendBtn');
+      const stopBtn = document.getElementById('stopBtn');
+      const activeModelFooter = document.getElementById('activeModelFooter');
+      const activeTempFooter = document.getElementById('activeTempFooter');
+      const lastMetricsSummary = document.getElementById('lastMetricsSummary');
+
+      const errorBanner = document.getElementById('errorBanner');
+      const errorBannerText = document.getElementById('errorBannerText');
+      const dismissErrorBtn = document.getElementById('dismissErrorBtn');
+
+      // Sidebar Elements
+      const configSidebar = document.getElementById('configSidebar');
+      const sidebarBackdrop = document.getElementById('sidebarBackdrop');
+      const toggleSidebarBtn = document.getElementById('toggleSidebarBtn');
+      const closeSidebarBtn = document.getElementById('closeSidebarBtn');
+
+      const modelSelect = document.getElementById('modelSelect');
+      const modelBadge = document.getElementById('modelBadge');
+      const customModelWrapper = document.getElementById('customModelWrapper');
+      const customModelInput = document.getElementById('customModelInput');
+
+      const browserSearchToggle = document.getElementById('browserSearchToggle');
+      const browserSearchKnob = document.getElementById('browserSearchKnob');
+      const browserSearchNote = document.getElementById('browserSearchNote');
+
+      const tempSlider = document.getElementById('tempSlider');
+      const tempValue = document.getElementById('tempValue');
+      const systemPromptInput = document.getElementById('systemPromptInput');
+      const resetSystemPromptBtn = document.getElementById('resetSystemPromptBtn');
+
+      const sidebarChangeKeyBtn = document.getElementById('sidebarChangeKeyBtn');
+      const sidebarClearKeyBtn = document.getElementById('sidebarClearKeyBtn');
+      const clearChatBtn = document.getElementById('clearChatBtn');
+
+      // --- Safe Markdown & Syntax Highlighting Setup ---
+      function escapeHtml(str) {
+        return String(str)
+          .replace(/&/g, '&amp;')
+          .replace(/</g, '&lt;')
+          .replace(/>/g, '&gt;')
+          .replace(/"/g, '&quot;')
+          .replace(/'/g, '&#039;');
+      }
+
+      if (typeof window.marked !== 'undefined' && typeof window.marked.setOptions === 'function') {
+        window.marked.setOptions({
+          breaks: true,
+          gfm: true,
+          highlight: function (code, lang) {
+            if (typeof window.hljs !== 'undefined') {
+              try {
+                if (lang && window.hljs.getLanguage(lang)) {
+                  return window.hljs.highlight(code, { language: lang }).value;
+                }
+                return window.hljs.highlightAuto(code).value;
+              } catch (_) {
+                return escapeHtml(code);
+              }
+            }
+            return escapeHtml(code);
+          }
+        });
+      }
+
+      function parseMarkdownSafe(rawText) {
+        const text = rawText || '';
+        if (typeof window.marked !== 'undefined' && typeof window.marked.parse === 'function') {
+          try {
+            return window.marked.parse(text);
+          } catch (_) {
+            return `<p class="whitespace-pre-wrap">${escapeHtml(text)}</p>`;
+          }
+        }
+        return `<p class="whitespace-pre-wrap">${escapeHtml(text)}</p>`;
+      }
+
+      // --- Utility & State Synchronization ---
+      function maskApiKey(key) {
+        if (!key || key.length < 8) return 'gsk_••••';
+        return `${key.slice(0, 7)}••••${key.slice(-4)}`;
+      }
+
+      function showError(message) {
+        errorBannerText.textContent = message;
+        errorBanner.classList.remove('hidden');
+      }
+
+      function hideError() {
+        errorBanner.classList.add('hidden');
+      }
+
+      function getEffectiveModel() {
+        const current = modelSelect.value === 'custom'
+          ? (customModelInput.value.trim() || 'llama-3.3-70b-versatile')
+          : modelSelect.value;
+
+        if (state.browserSearch) {
+          if (current.includes('compound')) return current;
+          return 'groq/compound';
+        }
+        return current;
+      }
+
+      function getModelBadgeText(modelName) {
+        if (modelName.includes('compound-mini')) return 'SEARCH MINI';
+        if (modelName.includes('compound')) return 'SEARCH';
+        if (modelName.includes('120b')) return '120B';
+        if (modelName.includes('70b')) return '70B';
+        if (modelName.includes('32b')) return '32B';
+        if (modelName.includes('20b')) return '20B';
+        if (modelName.includes('8b')) return '8B';
+        return 'CUSTOM';
+      }
+
+      function syncUIState() {
+        const effectiveModel = getEffectiveModel();
+        activeModelFooter.textContent = effectiveModel;
+        activeTempFooter.textContent = state.temperature.toFixed(1);
+        tempValue.textContent = state.temperature.toFixed(1);
+        tempSlider.value = String(state.temperature);
+        modelBadge.textContent = getModelBadgeText(effectiveModel);
+
+        // Sync Browser Search Toggle Visuals
+        browserSearchToggle.setAttribute('aria-checked', String(state.browserSearch));
+        if (state.browserSearch) {
+          browserSearchToggle.classList.remove('bg-console-elevated');
+          browserSearchToggle.classList.add('bg-sky-500');
+          browserSearchKnob.classList.remove('translate-x-0', 'bg-gray-400');
+          browserSearchKnob.classList.add('translate-x-4', 'bg-white');
+          headerSearchBadge.classList.remove('hidden');
+          headerSearchBadge.classList.add('inline-flex');
+          browserSearchNote.innerHTML = 'ON: Queries are routed through <code class="text-sky-400 font-mono">groq/compound</code> with real-time web search enabled.';
+        } else {
+          browserSearchToggle.classList.add('bg-console-elevated');
+          browserSearchToggle.classList.remove('bg-sky-500');
+          browserSearchKnob.classList.add('translate-x-0', 'bg-gray-400');
+          browserSearchKnob.classList.remove('translate-x-4', 'bg-white');
+          headerSearchBadge.classList.add('hidden');
+          headerSearchBadge.classList.remove('inline-flex');
+          browserSearchNote.innerHTML = 'Off: Uses selected standard LLM. Turn ON to route queries through <code class="text-sky-400 font-mono">groq/compound</code> with real-time web search.';
+        }
+
+        // Update Key Masked Display & Homepage Key Indicators
+        if (state.apiKey) {
+          keyMaskedText.textContent = maskApiKey(state.apiKey);
+          homeKeyBadge.classList.remove('hidden');
+          homeKeyBadge.classList.add('inline-flex');
+          clearSavedKeyHomeBtn.classList.remove('hidden');
+        } else {
+          homeKeyBadge.classList.add('hidden');
+          homeKeyBadge.classList.remove('inline-flex');
+          clearSavedKeyHomeBtn.classList.add('hidden');
+        }
+      }
+
+      // --- View Switching (Homepage <-> Playground) ---
+      function showHomepage(scrollToSetup = false) {
+        apiKeyError.classList.add('hidden');
+        apiKeyInput.value = state.apiKey || '';
+        playgroundView.classList.add('hidden');
+        playgroundView.classList.remove('flex');
+        homepageView.classList.remove('hidden');
+        homepageView.classList.add('flex');
+        syncUIState();
+
+        if (scrollToSetup) {
+          const setupEl = document.getElementById('api-setup');
+          if (setupEl) setupEl.scrollIntoView({ behavior: 'smooth' });
+          setTimeout(() => apiKeyInput.focus(), 200);
+        }
+      }
+
+      function showPlayground() {
+        homepageView.classList.add('hidden');
+        homepageView.classList.remove('flex');
+        playgroundView.classList.remove('hidden');
+        playgroundView.classList.add('flex');
+        syncUIState();
+        setTimeout(() => promptInput.focus(), 50);
+      }
+
+      async function verifyAndSaveApiKey(key) {
+        const trimmed = key.trim();
+        if (!trimmed.startsWith('gsk_')) {
+          throw new Error('Invalid format. API keys must start with "gsk_".');
+        }
+
+        const res = await fetch(MODELS_LIST_URL, {
+          method: 'GET',
+          headers: {
+            'Authorization': `Bearer ${trimmed}`,
+            'Content-Type': 'application/json'
+          }
+        });
+
+        if (!res.ok) {
+          if (res.status === 401) {
+            throw new Error('Authentication failed (401): Invalid API key.');
+          }
+          throw new Error(`API returned HTTP ${res.status}. Please verify your key.`);
+        }
+
+        state.apiKey = trimmed;
+        if (rememberKeyCheckbox.checked) {
+          safeSetStorage(STORAGE_KEY, trimmed);
+        } else {
+          safeRemoveStorage(STORAGE_KEY);
+        }
+        syncUIState();
+        showPlayground();
+      }
+
+      apiKeyForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        apiKeyError.classList.add('hidden');
+        const originalBtnHTML = saveKeyBtn.innerHTML;
+        saveKeyBtn.disabled = true;
+        saveKeyBtn.innerHTML = `<span class="animate-pulse">Verifying Key...</span>`;
+
+        try {
+          await verifyAndSaveApiKey(apiKeyInput.value);
+        } catch (err) {
+          apiKeyError.textContent = err.message || 'Unable to verify API key.';
+          apiKeyError.classList.remove('hidden');
+        } finally {
+          saveKeyBtn.disabled = false;
+          saveKeyBtn.innerHTML = originalBtnHTML;
+        }
+      });
+
+      toggleKeyVisibility.addEventListener('click', () => {
+        apiKeyInput.type = apiKeyInput.type === 'password' ? 'text' : 'password';
+      });
+
+      launchPlaygroundNavBtn.addEventListener('click', () => {
+        if (state.apiKey) {
+          showPlayground();
+        } else {
+          const setupEl = document.getElementById('api-setup');
+          if (setupEl) setupEl.scrollIntoView({ behavior: 'smooth' });
+          setTimeout(() => apiKeyInput.focus(), 200);
+        }
+      });
+
+      goHomeLogoBtn.addEventListener('click', () => showHomepage(false));
+      manageKeyBtn.addEventListener('click', () => showHomepage(true));
+      sidebarChangeKeyBtn.addEventListener('click', () => {
+        closeSidebar();
+        showHomepage(true);
+      });
+
+      function disconnectApiKey() {
+        if (state.isStreaming && state.abortController) {
+          state.abortController.abort();
+        }
+        safeRemoveStorage(STORAGE_KEY);
+        state.apiKey = '';
+        apiKeyInput.value = '';
+        closeSidebar();
+        showHomepage(true);
+      }
+
+      sidebarClearKeyBtn.addEventListener('click', disconnectApiKey);
+      clearSavedKeyHomeBtn.addEventListener('click', disconnectApiKey);
+
+      // --- Sidebar Controls Events ---
+      function openSidebar() {
+        configSidebar.classList.remove('translate-x-full');
+        sidebarBackdrop.classList.remove('hidden');
+      }
+
+      function closeSidebar() {
+        configSidebar.classList.add('translate-x-full');
+        sidebarBackdrop.classList.add('hidden');
+      }
+
+      toggleSidebarBtn.addEventListener('click', openSidebar);
+      closeSidebarBtn.addEventListener('click', closeSidebar);
+      sidebarBackdrop.addEventListener('click', closeSidebar);
+
+      modelSelect.addEventListener('change', () => {
+        const val = modelSelect.value;
+        if (val === 'custom') {
+          customModelWrapper.classList.remove('hidden');
+          customModelInput.focus();
+        } else {
+          customModelWrapper.classList.add('hidden');
+        }
+
+        if (val.includes('compound')) {
+          state.browserSearch = true;
+        } else {
+          state.previousNonSearchModel = val;
+          if (state.browserSearch) {
+            state.browserSearch = false;
+          }
+        }
+        syncUIState();
+      });
+
+      customModelInput.addEventListener('input', () => {
+        if (!customModelInput.value.includes('compound')) {
+          state.previousNonSearchModel = 'custom';
+        }
+        syncUIState();
+      });
+
+      browserSearchToggle.addEventListener('click', () => {
+        state.browserSearch = !state.browserSearch;
+        if (state.browserSearch) {
+          if (!modelSelect.value.includes('compound')) {
+            state.previousNonSearchModel = modelSelect.value;
+            modelSelect.value = 'groq/compound';
+            customModelWrapper.classList.add('hidden');
+          }
+        } else {
+          if (modelSelect.value.includes('compound')) {
+            const restoreModel = state.previousNonSearchModel || 'llama-3.3-70b-versatile';
+            modelSelect.value = restoreModel;
+            if (restoreModel === 'custom') {
+              customModelWrapper.classList.remove('hidden');
+            }
+          }
+        }
+        syncUIState();
+      });
+
+      tempSlider.addEventListener('input', (e) => {
+        state.temperature = parseFloat(e.target.value);
+        syncUIState();
+      });
+
+      resetSystemPromptBtn.addEventListener('click', () => {
+        systemPromptInput.value = 'You are a helpful, accurate, and concise AI assistant powered by Groq.';
+      });
+
+      clearChatBtn.addEventListener('click', () => {
+        if (state.isStreaming && state.abortController) {
+          state.abortController.abort();
+        }
+        state.messages = [];
+        chatContainer.innerHTML = '';
+        chatContainer.appendChild(emptyState);
+        emptyState.classList.remove('hidden');
+        lastMetricsSummary.textContent = '';
+        hideError();
+        closeSidebar();
+      });
+
+      dismissErrorBtn.addEventListener('click', hideError);
+
+      // --- Markdown & Copy Code Block Enhancement ---
+      function renderMarkdownWithCopyButtons(container, rawText) {
+        container.innerHTML = parseMarkdownSafe(rawText);
+
+        container.querySelectorAll('pre').forEach((pre) => {
+          if (pre.dataset.enhanced) return;
+          pre.dataset.enhanced = 'true';
+
+          const codeEl = pre.querySelector('code');
+          const langClass = Array.from(codeEl?.classList || []).find(c => c.startsWith('language-'));
+          const langLabel = langClass ? langClass.replace('language-', '') : 'code';
+
+          const header = document.createElement('div');
+          header.className = 'flex items-center justify-between px-3 py-1.5 bg-console-surface border-b border-console-border text-[11px] font-mono text-console-muted';
+          header.innerHTML = `
+            <span>${escapeHtml(langLabel)}</span>
+            <button type="button" class="copy-code-btn flex items-center gap-1 text-gray-400 hover:text-white transition">
+              <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+              </svg>
+              <span>Copy</span>
+            </button>
+          `;
+
+          const copyBtn = header.querySelector('.copy-code-btn');
+          copyBtn.addEventListener('click', () => {
+            const textToCopy = codeEl ? codeEl.innerText : pre.innerText;
+            const textarea = document.createElement('textarea');
+            textarea.value = textToCopy;
+            textarea.style.position = 'fixed';
+            textarea.style.opacity = '0';
+            document.body.appendChild(textarea);
+            textarea.select();
+            try {
+              document.execCommand('copy');
+              copyBtn.innerHTML = `<span class="text-emerald-400">Copied!</span>`;
+            } catch (_) {
+              copyBtn.innerHTML = `<span class="text-red-400">Failed</span>`;
+            }
+            document.body.removeChild(textarea);
+
+            setTimeout(() => {
+              copyBtn.innerHTML = `
+                <svg class="w-3.5 h-3.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M8 16H6a2 2 0 01-2-2V6a2 2 0 012-2h8a2 2 0 012 2v2m-6 12h8a2 2 0 002-2v-8a2 2 0 00-2-2h-8a2 2 0 00-2 2v8a2 2 0 002 2z" />
+                </svg>
+                <span>Copy</span>
+              `;
+            }, 1800);
+          });
+
+          pre.insertBefore(header, pre.firstChild);
+        });
+      }
+
+      // --- Chat Message DOM Creation ---
+      function appendUserMessage(content) {
+        emptyState.classList.add('hidden');
+        const wrapper = document.createElement('div');
+        wrapper.className = 'max-w-4xl mx-auto flex justify-end';
+
+        const bubble = document.createElement('div');
+        bubble.className = 'max-w-[85%] sm:max-w-[75%] bg-console-elevated border border-console-border text-gray-100 rounded-2xl rounded-tr-sm px-4 py-3 text-sm leading-relaxed whitespace-pre-wrap shadow-sm';
+        bubble.textContent = content;
+
+        wrapper.appendChild(bubble);
+        chatContainer.appendChild(wrapper);
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+      }
+
+      function createAssistantMessageSlot(modelName, isSearchEnabled) {
+        emptyState.classList.add('hidden');
+        const wrapper = document.createElement('div');
+        wrapper.className = 'max-w-4xl mx-auto flex gap-3.5 items-start';
+
+        // Groq Avatar
+        const avatar = document.createElement('div');
+        avatar.className = 'w-7 h-7 rounded-lg bg-groq-orange/15 border border-groq-orange/40 flex items-center justify-center text-groq-orange font-bold text-xs shrink-0 mt-0.5';
+        avatar.textContent = 'G';
+
+        const body = document.createElement('div');
+        body.className = 'flex-1 min-w-0';
+
+        // Header Row (Model Name + Search Badge)
+        const header = document.createElement('div');
+        header.className = 'flex flex-wrap items-center gap-2 mb-1.5';
+        header.innerHTML = `
+          <span class="text-xs font-mono font-medium text-gray-300">${escapeHtml(modelName)}</span>
+          ${isSearchEnabled ? `
+            <span class="inline-flex items-center gap-1 px-2 py-0.5 rounded-full text-[10px] font-medium bg-sky-500/10 text-sky-400 border border-sky-500/30">
+              <svg class="w-2.5 h-2.5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 12a9 9 0 01-9 9m9-9a9 9 0 00-9-9m9 9H3m9 9a9 9 0 01-9-9m9 9c1.657 0 3-4.03 3-9s-1.343-9-3-9m0 18c-1.657 0-3-4.03-3-9s1.343-9 3-9m-9 9a9 9 0 019-9" />
+              </svg>
+              Browser Search
+            </span>
+          ` : ''}
+        `;
+
+        // Content Area
+        const contentDiv = document.createElement('div');
+        contentDiv.className = 'markdown-body streaming-cursor text-gray-200';
+
+        // Metrics Footer (Tokens/s & Latency)
+        const metricsDiv = document.createElement('div');
+        metricsDiv.className = 'mt-2.5 flex flex-wrap items-center gap-3 text-[11px] font-mono text-console-dim';
+
+        body.appendChild(header);
+        body.appendChild(contentDiv);
+        body.appendChild(metricsDiv);
+        wrapper.appendChild(avatar);
+        wrapper.appendChild(body);
+        chatContainer.appendChild(wrapper);
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+
+        return { contentDiv, metricsDiv };
+      }
+
+      // --- Core Streaming Chat Execution ---
+      async function sendMessage(overridePrompt = null) {
+        if (state.isStreaming) return;
+        if (!state.apiKey) {
+          showHomepage(true);
+          return;
+        }
+
+        const text = (overridePrompt !== null ? overridePrompt : promptInput.value).trim();
+        if (!text) return;
+
+        hideError();
+        if (overridePrompt === null) {
+          promptInput.value = '';
+          promptInput.style.height = 'auto';
+        }
+
+        // Add user message to state and UI
+        state.messages.push({ role: 'user', content: text });
+        appendUserMessage(text);
+
+        const model = getEffectiveModel();
+        const isSearch = state.browserSearch;
+        const sysPrompt = systemPromptInput.value.trim();
+
+        const apiMessages = [];
+        if (sysPrompt) {
+          apiMessages.push({ role: 'system', content: sysPrompt });
+        }
+        state.messages.forEach(m => {
+          apiMessages.push({ role: m.role, content: m.content });
+        });
+
+        // UI Streaming State
+        state.isStreaming = true;
+        state.abortController = new AbortController();
+        sendBtn.disabled = true;
+        stopBtn.classList.remove('hidden');
+        stopBtn.classList.add('inline-flex');
+
+        const { contentDiv, metricsDiv } = createAssistantMessageSlot(model, isSearch);
+        let accumulatedText = '';
+        let tokenCount = 0;
+        const startTime = performance.now();
+        let firstTokenTime = null;
+        let finalUsage = null;
+
+        try {
+          const response = await fetch(CHAT_COMPLETIONS_URL, {
+            method: 'POST',
+            headers: {
+              'Authorization': `Bearer ${state.apiKey}`,
+              'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({
+              model: model,
+              messages: apiMessages,
+              temperature: state.temperature,
+              stream: true
+            }),
+            signal: state.abortController.signal
+          });
+
+          if (!response.ok) {
+            let errMsg = `HTTP ${response.status}`;
+            try {
+              const errData = await response.json();
+              errMsg = errData?.error?.message || errMsg;
+            } catch (_) {}
+            if (response.status === 401) {
+              errMsg = 'Invalid API Key (401). Please update your API key on the Homepage.';
+            } else if (response.status === 429) {
+              errMsg = 'Rate limit exceeded (429). Please wait a moment and try again.';
+            }
+            throw new Error(errMsg);
+          }
+
+          if (!response.body) {
+            throw new Error('Streaming response body is unavailable in this browser.');
+          }
+
+          const reader = response.body.getReader();
+          const decoder = new TextDecoder('utf-8');
+          let buffer = '';
+
+          while (true) {
+            const { done, value } = await reader.read();
+            if (done) break;
+
+            buffer += decoder.decode(value, { stream: true });
+            const lines = buffer.split(/\r?\n/);
+            buffer = lines.pop() || '';
+
+            for (const line of lines) {
+              const trimmed = line.trim();
+              if (!trimmed || !trimmed.startsWith('data:')) continue;
+              const dataStr = trimmed.slice(5).trim();
+              if (dataStr === '[DONE]') continue;
+
+              try {
+                const parsed = JSON.parse(dataStr);
+                const choiceDelta = parsed.choices?.[0]?.delta || {};
+                const deltaText = choiceDelta.content || '';
+
+                if (parsed.x_groq?.usage) {
+                  finalUsage = parsed.x_groq.usage;
+                } else if (parsed.usage) {
+                  finalUsage = parsed.usage;
+                }
+
+                if (deltaText) {
+                  if (!firstTokenTime) firstTokenTime = performance.now();
+                  accumulatedText += deltaText;
+                  tokenCount++;
+                  renderMarkdownWithCopyButtons(contentDiv, accumulatedText);
+
+                  const isNearBottom = chatContainer.scrollHeight - chatContainer.scrollTop - chatContainer.clientHeight < 140;
+                  if (isNearBottom) {
+                    chatContainer.scrollTop = chatContainer.scrollHeight;
+                  }
+                }
+              } catch (_) {
+                // Ignore partial JSON frames across stream boundaries
+              }
+            }
+          }
+
+          // Finalize Metrics Display
+          const endTime = performance.now();
+          const totalDurationSec = Math.max((endTime - startTime) / 1000, 0.01);
+          const ttftMs = firstTokenTime ? Math.round(firstTokenTime - startTime) : Math.round(endTime - startTime);
+
+          const completionTokens = finalUsage?.completion_tokens || tokenCount;
+          const completionTimeSec = finalUsage?.completion_time || totalDurationSec;
+          const tokensPerSec = (completionTokens / Math.max(completionTimeSec, 0.01)).toFixed(1);
+
+          const metricBadge = `⚡ ${tokensPerSec} tok/s · TTFT ${ttftMs}ms · ${completionTokens} tokens`;
+          metricsDiv.innerHTML = `
+            <span class="inline-flex items-center gap-1.5 px-2 py-0.5 rounded bg-console-surface border border-console-border text-emerald-400">
+              ${metricBadge}
+            </span>
+          `;
+          lastMetricsSummary.textContent = `${tokensPerSec} tok/s`;
+
+          if (accumulatedText) {
+            state.messages.push({ role: 'assistant', content: accumulatedText });
+          } else {
+            contentDiv.innerHTML = `<span class="text-console-muted text-xs italic">Empty response returned by model.</span>`;
+          }
+
+        } catch (err) {
+          if (err.name === 'AbortError') {
+            metricsDiv.innerHTML = `<span class="text-amber-400">Generation stopped by user.</span>`;
+            if (accumulatedText) {
+              state.messages.push({ role: 'assistant', content: accumulatedText });
+            }
+          } else {
+            showError(err.message || 'Failed to communicate with inference API.');
+            if (!accumulatedText) {
+              contentDiv.innerHTML = `<span class="text-red-400 text-xs">Request failed. See error banner above.</span>`;
+            }
+          }
+        } finally {
+          contentDiv.classList.remove('streaming-cursor');
+          state.isStreaming = false;
+          state.abortController = null;
+          sendBtn.disabled = false;
+          stopBtn.classList.add('hidden');
+          stopBtn.classList.remove('inline-flex');
+          chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+      }
+
+      // --- Event Listeners for Chat Input & Starters ---
+      sendBtn.addEventListener('click', () => sendMessage());
+
+      stopBtn.addEventListener('click', () => {
+        if (state.abortController) {
+          state.abortController.abort();
+        }
+      });
+
+      promptInput.addEventListener('keydown', (e) => {
+        if (e.key === 'Enter' && !e.shiftKey) {
+          e.preventDefault();
+          sendMessage();
+        }
+      });
+
+      promptInput.addEventListener('input', () => {
+        promptInput.style.height = 'auto';
+        promptInput.style.height = Math.min(promptInput.scrollHeight, 192) + 'px';
+      });
+
+      document.querySelectorAll('.starter-prompt').forEach((btn) => {
+        btn.addEventListener('click', () => {
+          const promptText = btn.getAttribute('data-prompt');
+          const needsSearch = btn.getAttribute('data-enable-search') === 'true';
+          if (needsSearch && !state.browserSearch) {
+            browserSearchToggle.click();
+          }
+          sendMessage(promptText);
+        });
+      });
+
+      // --- Initialize App ---
+      syncUIState();
+      if (!state.apiKey) {
+        showHomepage(false);
+      } else {
+        showPlayground();
+      }
+    })();
+  </script>
+</body>
+</html>
